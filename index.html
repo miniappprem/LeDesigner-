@@ -1,0 +1,1125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>LE DESIGNER</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDUrCRyF9Ad0-_A4QL3SHIEtwSNB8IMjqc",
+    authDomain: "ledesigner-2d66b.firebaseapp.com",
+    projectId: "ledesigner-2d66b",
+    storageBucket: "ledesigner-2d66b.firebasestorage.app",
+    messagingSenderId: "880981724043",
+    appId: "1:880981724043:web:f34d7e086fa73d20a4fd8e",
+    measurementId: "G-XZBDQQYHW7"
+  };
+
+  try {
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      window.db = db;
+      window.firebaseCollections = { collection, getDocs, setDoc, doc, deleteDoc, getDoc };
+  } catch(e) {
+      console.log("Erreur Firebase :", e);
+  }
+</script>
+
+<style>
+:root {
+    --bg: #030305;
+    --text: #ffffff;
+    --muted: #a1a1aa;
+    --purple: #8a2be2;
+    --purple-light: #b066ff;
+    --blue: #4169e1;
+    --blue-light: #7090ff;
+    --border-white: rgba(255, 255, 255, 0.25);
+    --btn-gradient: linear-gradient(135deg, var(--purple), var(--blue));
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    margin: 0; width: 100%; overflow-x: hidden;
+    background-color: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overscroll-behavior: none;
+}
+
+/* FOND 3D */
+.bg-3d {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -2; background: var(--bg); overflow: hidden;
+}
+.light-orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0.55; mix-blend-mode: screen;
+    animation: moveOrb 15s ease-in-out infinite alternate;
+}
+.orb-1 { width: 350px; height: 350px; background: var(--purple); top: -10%; left: -15%; }
+.orb-2 { width: 450px; height: 450px; background: var(--blue); bottom: -20%; right: -20%; animation-delay: -5s; }
+.orb-3 { width: 250px; height: 250px; background: #ff00ff; top: 35%; left: 35%; animation-delay: -10s; opacity: 0.35; }
+@keyframes moveOrb {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(30px, 50px, 0) scale(1.2); }
+    100% { transform: translate3d(-20px, 40px, 0) scale(0.9); }
+}
+
+/* BORDURES LUMINEUSES ANIMÉES */
+.glow-border {
+    position: relative;
+    border: 1px solid rgba(176, 102, 255, 0.6) !important;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.4), inset 0 0 10px rgba(112, 144, 255, 0.2) !important;
+    animation: pulseGlow 3s ease-in-out infinite alternate;
+}
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 12px rgba(138, 43, 226, 0.4), inset 0 0 8px rgba(65, 105, 225, 0.3); border-color: rgba(138, 43, 226, 0.5); }
+    50% { box-shadow: 0 0 22px rgba(176, 102, 255, 0.75), inset 0 0 14px rgba(176, 102, 255, 0.5); border-color: rgba(176, 102, 255, 0.9); }
+    100% { box-shadow: 0 0 15px rgba(65, 105, 225, 0.5), inset 0 0 8px rgba(138, 43, 226, 0.3); border-color: rgba(65, 105, 225, 0.7); }
+}
+
+/* ANIMATION DE FEU POUR PAGE INFOS */
+@keyframes fireBoxAnim {
+    0%, 100% {
+        box-shadow: 0 0 25px rgba(255, 68, 0, 0.6), inset 0 0 20px rgba(255, 102, 0, 0.4);
+        border-color: #ff4500;
+        text-shadow: 0 0 12px rgba(255, 136, 0, 0.8);
+    }
+    50% {
+        box-shadow: 0 0 45px rgba(255, 0, 0, 0.85), inset 0 0 30px rgba(255, 153, 0, 0.6);
+        border-color: #ff0000;
+        text-shadow: 0 0 18px rgba(255, 30, 0, 1);
+    }
+}
+.info-fire-box {
+    width: 100%;
+    background: radial-gradient(circle, rgba(60, 10, 0, 0.7) 0%, rgba(15, 3, 0, 0.85) 100%);
+    border: 1.5px solid #ff4500;
+    border-radius: 26px;
+    padding: 24px 18px;
+    font-size: 18px; /* Gros texte */
+    font-weight: 800;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    text-align: center;
+    color: #ffffff;
+    animation: fireBoxAnim 2.5s infinite ease-in-out alternate;
+    position: relative;
+    overflow: hidden;
+}
+
+.app { max-width: 800px; width: 100%; overflow-x: hidden; margin: auto; padding: 14px 14px 110px; }
+button, input, textarea { font: inherit; color: inherit; outline: none; }
+button { cursor: pointer; border: 0; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+button:active { transform: scale(0.94); }
+
+.glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--border-white);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* NOTIFICATIONS */
+#toasts { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.toast { background: var(--btn-gradient); color: #fff; padding: 14px 22px; border-radius: 99px; font-size: 13px; font-weight: 700; opacity: 0; transform: translateY(-20px); transition: 0.4s; display: flex; align-items: center; gap: 10px; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* HEADER */
+.top { position: sticky; top: 10px; z-index: 20; height: 65px; border-radius: 22px; padding: 8px 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand img { width: 48px; height: 48px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border-white); }
+.brand b { font-size: 15px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 800; }
+.brand small { display: block; color: var(--purple-light); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.spacer { flex: 1; }
+.ico { width: 45px; height: 45px; border-radius: 16px; background: rgba(255,255,255,0.08); border: 1px solid var(--border-white); display: grid; place-items: center; color: #fff; }
+.badge { position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: #ff0055; font-size: 10px; font-weight: 800; color: #fff; }
+
+/* PAGES */
+.page { display: none; animation: in .4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.page.on { display: block; }
+@keyframes in { from { opacity: 0; transform: translateY(15px) scale(0.98); } to { opacity: 1; transform: none scale(1); } }
+
+/* ACCUEIL STYLISÉ */
+.home-container { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; }
+
+.hero-logo-bottom {
+    width: 210px; height: 210px; border-radius: 48px; overflow: hidden; margin: 10px 0 5px;
+    transform-style: preserve-3d; perspective: 1000px; animation: floatLogo3D 6s ease-in-out infinite; background: #000;
+}
+.hero-logo-bottom img { width: 100%; height: 100%; object-fit: cover; }
+@keyframes floatLogo3D {
+    0%, 100% { transform: translateY(0) rotateX(8deg) rotateY(-8deg); }
+    50% { transform: translateY(-12px) rotateX(-5deg) rotateY(5deg); }
+}
+
+.glow-title {
+    font-size: 24px; font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase; line-height: 1.3;
+    background: linear-gradient(135deg, #fff 0%, var(--purple-light) 50%, var(--blue-light) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(176,102,255,0.4);
+    margin: 5px 0;
+}
+.hero-subtitle { font-size: 14px; color: var(--purple-light); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
+
+.cta-big { font-size: 14px; padding: 18px 40px; border-radius: 24px; background: var(--btn-gradient); color: #fff; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 12px; margin-top: 15px; }
+.designer-capsule {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 99px;
+    background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-white); color: #fff;
+    text-decoration: none; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; margin-top: 5px;
+}
+
+/* BANNIÈRE CATALOGUE AVEC TEXTE SUR-MESURE */
+.hero-banner-top {
+    width: 100%; height: 170px; border-radius: 26px; overflow: hidden; position: relative;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 15px;
+}
+.hero-banner-top img { width: 100%; height: 100%; object-fit: cover; animation: breathe 10s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+.banner-overlay-text {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 15px; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(2px);
+    font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: #fff;
+    text-shadow: 0 0 15px rgba(138, 43, 226, 0.8), 0 0 30px rgba(112, 144, 255, 0.6);
+}
+
+/* RECHERCHE ET FILTRES PLACÉS EN HAUT (SOUS LA BANNIÈRE) */
+.search { position: relative; width: 100%; margin-bottom: 0; flex: 1; }
+.search svg { position: absolute; left: 18px; top: 16px; color: var(--muted); }
+.search input { width: 100%; height: 54px; padding: 0 15px 0 50px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-white); border-radius: 20px; font-size: 14px; color: #fff; }
+
+.filter-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0 15px; scrollbar-width: none; width: 100%; }
+.filter-scroll::-webkit-scrollbar { display: none; }
+.filter-pill { flex: 0 0 auto; padding: 10px 20px; border-radius: 18px; background: rgba(255,255,255,0.08); border: 1px solid var(--border-white); color: #fff; font-size: 12px; font-weight: 700; }
+.filter-pill.active { background: var(--btn-gradient); }
+
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; width: 100%; padding-bottom: 20px; }
+.card { padding: 12px; border-radius: 26px; position: relative; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
+.thumb { width: 100%; aspect-ratio: 1/1; border-radius: 18px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 12px; position: relative; }
+.thumb img, .thumb video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+
+.fav-btn { position: absolute; top: 10px; left: 10px; z-index: 5; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border: 1px solid var(--border-white); border-radius: 50%; width: 34px; height: 34px; display: grid; place-items: center; color: #fff; }
+.fav-btn.active svg { fill: #ff0055; stroke: #ff0055; }
+
+@keyframes fireFlicker {
+    0%, 100% { border-color: #ff5500; color: #ffcc00; }
+    50% { border-color: #ff0000; color: #ffffff; }
+}
+.tag { display: inline-block; padding: 5px 8px; border-radius: 8px; background: rgba(50, 0, 0, 0.4); font-size: 9px; font-weight: 900; text-transform: uppercase; animation: fireFlicker 1.5s infinite; border: 1px solid #ff5500; }
+.card h3 { margin: 8px 0 4px; font-size: 14px; font-weight: 700; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.price { font-size: 16px; font-weight: 900; margin-top: auto; color: var(--blue-light); }
+
+/* CASES STYLISÉES POUR PROFIL */
+.profile-box {
+    width: 100%;
+    padding: 20px;
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-white);
+    margin-bottom: 20px;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 10px 25px rgba(0,0,0,0.4);
+}
+.profile-box-title {
+    font-size: 16px;
+    font-weight: 900;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--purple-light);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* PANIER & PAIEMENT */
+.panel { padding: 22px; border-radius: 30px; margin-top: 10px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+.cartList { display: grid; gap: 12px; width: 100%; }
+.row { display: grid; grid-template-columns: 65px 1fr auto; gap: 12px; align-items: center; padding: 12px; border-radius: 20px; width: 100%; }
+.row img, .row video { width: 65px; height: 65px; border-radius: 14px; object-fit: cover; }
+.row h3 { margin: 0 0 4px; font-size: 14px; font-weight: 700; }
+
+.discount-badge {
+    width: 100%; padding: 12px; border-radius: 16px; background: rgba(37, 211, 102, 0.15);
+    border: 1px solid rgba(37, 211, 102, 0.4); color: #25D366; font-size: 12px; font-weight: 800;
+    text-align: center; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.shipping-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-white); padding: 14px; border-radius: 16px; margin-bottom: 10px; color: #fff; font-size: 13px; }
+.payment-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; width: 100%; }
+.pay-btn { padding: 12px 8px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-white); color: #fff; font-size: 11px; font-weight: 800; }
+.pay-btn.active { background: var(--btn-gradient); border-color: rgba(255,255,255,0.6); }
+
+.total { margin-top: 15px; padding: 20px; border-radius: 22px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.06); width: 100%; }
+.total span { font-size: 12px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.total b { font-size: 26px; font-weight: 900; }
+
+.cta { width: 100%; padding: 18px; border-radius: 20px; font-weight: 800; text-align: center; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; font-size: 13px; }
+.cta-tg { background: linear-gradient(135deg,#0088cc,#005580); }
+.cta-wa { background: linear-gradient(135deg,#25D366,#128C7E); }
+
+/* RESEAUX SOCIAUX (PAGE INFOS) */
+.social-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; margin-top: 20px; }
+.social-btn {
+    padding: 16px; border-radius: 20px; border: 1px solid var(--border-white);
+    background: rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px;
+    color: #fff; text-decoration: none; font-size: 13px; font-weight: 800;
+}
+
+/* MENU BAS */
+.bottom { position: fixed; z-index: 50; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; padding: 8px; border-radius: 30px; width: 92%; max-width: 400px; justify-content: space-between; }
+.nav { flex: 1; height: 54px; background: transparent; color: var(--muted); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; gap: 4px; border: none; }
+.nav.on { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid var(--border-white); }
+.cart { width: 64px; height: 64px; border-radius: 50%; margin: -22px 5px 0; background: var(--btn-gradient); color: #fff; border: 2px solid var(--border-white); flex: none; }
+
+/* DRAWER & PIN */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); z-index: 90; display: none; opacity: 0; transition: 0.4s; }
+.overlay.open { display: flex; opacity: 1; }
+.drawer { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 15, 20, 0.9); backdrop-filter: blur(30px); border-top: 1px solid var(--border-white); border-radius: 36px 36px 0 0; z-index: 100; transform: translateY(100%); transition: 0.5s; padding: 25px 20px 40px; max-height: 90vh; overflow-y: auto; }
+.drawer.open { transform: translateY(0); }
+.drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+.pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; max-width: 280px; margin: auto; }
+.pin-key { aspect-ratio: 1/1; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid var(--border-white); font-size: 24px; font-weight: 900; display: grid; place-items: center; }
+.pin-dots { display: flex; justify-content: center; gap: 16px; margin: 20px 0 30px; }
+.pin-dot { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid var(--border-white); }
+.pin-dot.filled { background: #fff; box-shadow: 0 0 12px #fff; }
+
+.media-carousel { display: flex; overflow-x: auto; gap: 12px; margin-bottom: 20px; border-radius: 20px; padding: 4px; background: rgba(0,0,0,0.4); height: 320px; width: 100%; }
+.media-carousel::-webkit-scrollbar { display: none; }
+.media-carousel .media-item { flex: 0 0 100%; width: 100%; height: 100%; border-radius: 16px; object-fit: contain; background: #000; }
+
+.variants-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+.variant-btn { padding: 14px; border-radius: 18px; border: 1px solid var(--border-white); background: rgba(255,255,255,0.05); text-align: center; font-size: 14px; display: flex; flex-direction: column; gap: 4px; }
+.variant-btn.active { background: var(--btn-gradient); border-color: rgba(255,255,255,0.6); }
+
+.flex-row { display: flex; gap: 10px; margin: 15px 0 25px; }
+.delivery-btn { padding: 16px 10px; border-radius: 20px; border: 1px solid var(--border-white); background: rgba(255,255,255,0.05); flex: 1; text-align: center; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 13px; }
+.delivery-btn.active { background: var(--btn-gradient); }
+
+/* ADMIN */
+.admin-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-white); padding: 14px; border-radius: 16px; margin-bottom: 10px; font-size: 13px; color: #fff; }
+.admin-list { margin-top: 15px; display: grid; gap: 10px; width: 100%; }
+.admin-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-white); }
+.admin-btn { padding: 10px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,0.1); border: 1px solid var(--border-white); }
+</style>
+</head>
+<body>
+
+<div class="bg-3d">
+    <div class="light-orb orb-1"></div>
+    <div class="light-orb orb-2"></div>
+    <div class="light-orb orb-3"></div>
+</div>
+
+<div id="toasts"></div>
+<div id="overlay" class="overlay" onclick="closeAllModals()"></div>
+
+<div class="app">
+
+<!-- HEADER -->
+<header class="top glass">
+    <div class="brand">
+        <img id="logoHeader" src="https://raw.githubusercontent.com/miniappprem/image/520706c1c21d2db31b9b7e1aaee2be6fccb0428c/IMG_0391.jpeg" alt="Logo">
+        <div>
+            <b>LE DESIGNER</b>
+            <small>Application Officielle</small>
+        </div>
+    </div>
+    <div class="spacer"></div>
+    <button class="ico" onclick="vibe(); openPinDrawer()" aria-label="Admin">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </button>
+</header>
+
+<!-- ACCUEIL -->
+<section id="home" class="page on">
+    <div class="home-container">
+
+        <!-- LOGO EN GRAND EN HAUT -->
+        <div class="hero-logo-bottom glow-border">
+            <img id="logoBig" src="https://raw.githubusercontent.com/miniappprem/image/962d81c243e3bfc46998cd785bc23a6f779de766/839FA3F8-A506-4708-92E5-F9808F651043.jpeg" alt="Logo">
+        </div>
+
+        <!-- GROS TEXTE -->
+        <div class="hero-text-box">
+            <h1 class="glow-title">GRAPHISME - CRÉATION 3D - WEB DESIGN</h1>
+            <p class="hero-subtitle">NUMÉRO 1 ET MULTIFONCTIONS</p>
+        </div>
+
+        <!-- BOUTON ACCÉDER AUX CRÉATIONS EN BAS -->
+        <button class="cta-big glass glow-border" onclick="page('shop')">
+            Accéder aux créations
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+
+        <a href="https://t.me/babydriverss" target="_blank" class="designer-capsule" onclick="vibe('medium')">
+            RÉALISÉ PAR LE DESIGNER
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#8a2be2"><path d="M22.5 12.5l-2.12-2.39.29-3.18-3.14-.6-1.78-2.65-2.92 1.34L10 3.68 8.22 6.33l-3.14.6.29 3.18L3.25 12.5l2.12 2.39-.29 3.18 3.14.6 1.78 2.65 2.92-1.34L14 20.32l1.78-2.65 3.14-.6-.29-3.18 2.12-2.39z"/><path d="M10.46 15.68l-3.41-3.41 1.41-1.41 2 2 5-7.07 1.62 1.15-6.62 8.74z" fill="#fff"/></svg>
+        </a>
+    </div>
+</section>
+
+<!-- BOUTIQUE / CATALOGUE -->
+<section id="shop" class="page">
+    <!-- BANNIÈRE EN HAUT -->
+    <div class="hero-banner-top glow-border">
+        <img id="bannerImg" src="" alt="Banner">
+        <div id="bannerTextDisplay" class="banner-overlay-text">DESIGN EXCLUSIF</div>
+    </div>
+
+    <!-- RECHERCHE ET BOUTON FILTRE (PLACÉS SOUS LA BANNIÈRE) -->
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+        <div class="search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg>
+            <input id="search" placeholder="Rechercher un design..." oninput="renderShop()">
+        </div>
+        <button class="ico glass glow-border" onclick="vibe(); toggleCategories()" style="width: 54px; height: 54px; border-radius: 20px; flex-shrink: 0;" title="Filtres Catégories">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+        </button>
+    </div>
+
+    <div id="filterScroll" class="filter-scroll" style="display:none;"></div>
+
+    <!-- GRILLE DES PRODUITS CATALOGUE -->
+    <div id="products" class="grid"></div>
+</section>
+
+<!-- PANIER -->
+<section id="cart" class="page">
+    <div class="panel glass">
+        <h2 style="margin:5px 0 20px; font-size:24px; font-weight:800;">Panier</h2>
+        
+        <div id="cartList" class="cartList"></div>
+        
+        <div id="paymentBox" style="display:none; width:100%; margin-top:20px;">
+            <label style="font-size:12px; color:var(--purple-light); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block; font-weight:700;">💳 Mode de paiement</label>
+            <div class="payment-grid">
+                <button class="pay-btn active" onclick="setPayment('VIREMENT BANCAIRE')">VIREMENT BANCAIRE</button>
+                <button class="pay-btn" onclick="setPayment('PAYPAL')">PAYPAL</button>
+                <button class="pay-btn" onclick="setPayment('PAYSAFECARD')">PAYSAFECARD</button>
+                <button class="pay-btn" onclick="setPayment('PCS')">PCS</button>
+                <button class="pay-btn" style="grid-column: span 2;" onclick="setPayment('CRYPTO')">CRYPTO</button>
+            </div>
+        </div>
+
+        <div id="addressBox" style="display:none; width:100%; margin-top:10px;">
+            <label style="font-size:12px; color:var(--purple-light); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block; font-weight:700;">📝 Précisions commande</label>
+            <textarea id="clientDetails" class="shipping-input" placeholder="Couleurs souhaitées, nom/texte du logo..." style="min-height:60px;"></textarea>
+
+            <div id="impressionForm" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border-white);">
+                <label style="font-size:12px; color:#ff0055; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block; font-weight:700;">📍 Adresse de livraison</label>
+                <input type="text" id="clientCP" class="shipping-input" placeholder="Code postal (Ex: 75001)">
+                <input type="tel" id="clientPhone" class="shipping-input" placeholder="Téléphone (Ex: 06...)">
+                <textarea id="clientAddress" class="shipping-input" placeholder="Adresse complète..." style="min-height:50px;"></textarea>
+            </div>
+        </div>
+
+        <div id="total"></div>
+    </div>
+</section>
+
+<!-- INFORMATIONS & RÉSEAUX (TEXTE EN GROS & ANIMATION FEU) -->
+<section id="socials" class="page">
+    <div class="panel glass">
+        <h2 style="margin:5px 0 20px; font-size:24px; font-weight:900;">Informations</h2>
+        
+        <!-- TEXTE EN GROS AVEC ANIMATION DE FEU EN ARRIÈRE-PLAN -->
+        <div id="infoDisplayBox" class="info-fire-box">
+            Chargement...
+        </div>
+
+        <h3 style="margin:25px 0 10px; font-size:16px; font-weight:800; width:100%; text-align:left;">Mes Réseaux Officiels</h3>
+        <div class="social-grid">
+            <a href="https://t.me/babydriverss" target="_blank" class="social-btn glass">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0088cc"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0l-3.8 2.39c-.56.36-1.11.53-1.63.51-.57-.02-1.67-.32-2.48-.59-.67-.22-1.2-.34-1.16-.72.02-.19.3-.39.84-.59 3.29-1.43 5.48-2.38 6.57-2.83 3.12-1.3 3.77-1.53 4.2-1.54.09 0 .31.02.43.14.1.13.25.14.36-.01.07-.01.16-.02.26z"/></svg>
+                Telegram
+            </a>
+            <a href="https://wa.me/33748423287" target="_blank" class="social-btn glass">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                WhatsApp
+            </a>
+            <a href="https://instagram.com" target="_blank" class="social-btn glass">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e1306c" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                Instagram
+            </a>
+            <a href="https://tiktok.com" target="_blank" class="social-btn glass">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 1 1-5.2-1.74 2.89 2.89 0 0 1 2.31-2.22V8.2a6.34 6.34 0 1 0 6.34 6.34V9.2a8.16 8.16 0 0 0 3.77.92V6.69z"/></svg>
+                TikTok
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- PROFIL & MES COMMANDES / FAVORIS DANS DES CASES STYLISÉES -->
+<section id="profile" class="page">
+    <div class="panel glass">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 0; width:100%;">
+            <div style="width:100px;height:100px;border-radius:50%;background:var(--btn-gradient);border:2px solid var(--border-white);padding:3px;margin-bottom:12px;">
+                <img id="tgAvatar" src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=200" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.src='https://via.placeholder.com/150'">
+            </div>
+            <h2 id="tgName" style="margin:0;font-size:22px; font-weight:900;">Visiteur</h2>
+            <p id="tgId" style="margin:6px 0 25px;font-size:13px;color:var(--blue-light);font-weight:700;">ID: ---------</p>
+            
+            <!-- CASE STYLISÉE : MES FAVORIS -->
+            <div class="profile-box glow-border">
+                <div class="profile-box-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ff0055" stroke="#ff0055" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    Mes Favoris
+                </div>
+                <div id="favoritesList" class="grid" style="grid-template-columns: repeat(2, 1fr); padding-bottom: 0;"></div>
+            </div>
+
+            <!-- CASE STYLISÉE : HISTORIQUE COMMANDES -->
+            <div class="profile-box glow-border">
+                <div class="profile-box-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    Mes Commandes
+                </div>
+                <div id="ordersHistoryList" style="display:grid; gap:10px; width:100%;"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONSOLE ADMIN -->
+<section id="adminPage" class="page">
+    <div class="panel glass">
+        <h2 style="margin-top:0; font-weight:900;">Console Admin 🔒</h2>
+
+        <div style="margin-bottom:20px; padding:18px; background:rgba(0,0,0,0.3); border-radius:20px; border:1px solid var(--border-white); width:100%;">
+            <h3 style="margin-top:0; font-size:15px; font-weight:800;">Bannière du Catalogue</h3>
+            
+            <label style="font-size:11px; color:var(--muted); font-weight:700; display:block; margin-bottom:4px;">Lien de l'image :</label>
+            <input type="text" id="adminBannerInput" class="admin-input" placeholder="URL de la bannière...">
+            
+            <label style="font-size:11px; color:var(--muted); font-weight:700; display:block; margin-bottom:4px;">Gros texte sur la bannière :</label>
+            <input type="text" id="adminBannerTextInput" class="admin-input" placeholder="Ex: DESIGN EXCLUSIF SUR MESURE">
+            
+            <button class="cta glass" style="margin:5px 0 0;padding:14px; background:var(--btn-gradient)" onclick="saveBanner()">Mettre à jour Bannière</button>
+        </div>
+        
+        <div style="margin-bottom:20px; padding:18px; background:rgba(0,0,0,0.3); border-radius:20px; border:1px solid var(--border-white); width:100%;">
+            <h3 style="margin-top:0; font-size:15px; font-weight:800;">Page Informations</h3>
+            <textarea class="admin-input" id="adminInfoInput" style="resize:vertical; min-height:100px;"></textarea>
+            <button class="cta glass" style="margin:5px 0 0;padding:14px; background:var(--btn-gradient)" onclick="saveStoreInfo()">Mettre à jour Infos</button>
+        </div>
+
+        <button class="cta glass" onclick="vibe(); openAdminForm()">+ Ajouter une Création</button>
+        
+        <div id="adminFormContainer" style="display:none;margin-top:20px;padding:20px;background:rgba(0,0,0,0.4);border-radius:24px;border:1px solid var(--border-white); width:100%;">
+            <h3 style="margin-top:0; font-weight:800;">Éditer le Service</h3>
+            <input type="hidden" id="aId">
+            <input class="admin-input" type="text" id="aTitle" placeholder="Titre (ex: Logo 3D)">
+            <input class="admin-input" type="text" id="aOrigin" placeholder="Catégorie (ex: Graphisme)">
+            <input class="admin-input" type="text" id="aTag" placeholder="Badge (ex: NEW)">
+            <textarea class="admin-input" id="aDesc" placeholder="Description..."></textarea>
+            <input class="admin-input" type="text" id="aMedia" placeholder="URL Aperçu (image/video MP4)">
+
+            <label style="font-size:13px; font-weight:800; display:block; margin:15px 0 10px;">Options & Tarifs :</label>
+            <div id="variantsContainer" style="display:flex;flex-direction:column;gap:10px;margin-bottom:15px;"></div>
+            <button class="cta glass" style="background:transparent; border-style:dashed; padding:12px; margin-bottom:15px;" onclick="addVariantRow()">+ Option</button>
+
+            <div style="display:flex;gap:10px;">
+                <button class="cta glass" style="flex:1;background:var(--btn-gradient);margin:0;" onclick="saveProduct()">Sauver</button>
+                <button class="cta glass" style="flex:1;background:rgba(255,255,255,0.1);margin:0;" onclick="closeAdminForm()">Fermer</button>
+            </div>
+        </div>
+        <div id="adminProductsList" class="admin-list"></div>
+    </div>
+</section>
+
+</div>
+
+<!-- MENU NAVIGATION BAS -->
+<nav class="bottom glass">
+    <button class="nav on glass" data-p="home" onclick="page('home')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-6h6v6"/></svg>
+        Accueil
+    </button>
+    <button class="nav glass" data-p="shop" onclick="page('shop')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+        Services
+    </button>
+    <button class="nav cart glass" data-p="cart" onclick="page('cart')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+        <span id="badge" class="badge">0</span>
+    </button>
+    <button class="nav glass" data-p="socials" onclick="page('socials')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Infos
+    </button>
+    <button class="nav glass" data-p="profile" onclick="page('profile')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profil
+    </button>
+</nav>
+
+<!-- MODAL PRODUIT -->
+<div id="productDrawer" class="drawer">
+    <div class="drawer-header">
+        <h3 style="font-size:14px; color:var(--purple-light); text-transform:uppercase;">Détails Service</h3>
+        <button class="ico" onclick="closeAllModals()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    
+    <div id="pmMedia" class="media-carousel"></div>
+    <span id="pmTag" class="tag glass"></span>
+    <h2 id="pmTitle" style="margin:12px 0 6px; font-size:24px; font-weight:900;"></h2>
+    <p id="pmDesc" style="font-size:14px; color:#ddd; margin-bottom:20px; line-height:1.5;"></p>
+
+    <p style="font-size:12px;color:var(--purple-light);text-transform:uppercase;margin:0 0 10px; font-weight:800;">Option</p>
+    <div id="pmVariants" class="variants-grid"></div>
+    
+    <p style="font-size:12px;color:var(--purple-light);text-transform:uppercase;margin:0 0 10px; font-weight:800;">Format</p>
+    <div class="flex-row">
+        <button id="btnFormatNum" class="delivery-btn active glass" onclick="setFormat('Fichier Numérique')">Numérique</button>
+        <button id="btnFormatImp" class="delivery-btn glass" onclick="setFormat('Impression Physique')">Impression</button>
+    </div>
+    <button class="cta glass" style="background:var(--btn-gradient);" onclick="addToCartFromModal()">Ajouter au Panier</button>
+</div>
+
+<!-- COFFRE ADMIN PIN -->
+<div id="pinDrawer" class="drawer" style="align-items:center">
+    <div class="drawer-header" style="width:100%">
+        <h3 style="font-weight:900;">Coffre Admin</h3>
+        <button class="ico" onclick="closeAllModals()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div style="text-align:center;width:100%;max-width:300px" id="pinScreenBox">
+        <p class="muted" style="margin:0 0 10px;font-size:12px;text-transform:uppercase;font-weight:700;">Code Secret</p>
+        <div class="pin-dots" id="pinDots">
+            <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+        </div>
+        <div class="pin-pad">
+            <button class="pin-key glass" onclick="pressPin('1')">1</button>
+            <button class="pin-key glass" onclick="pressPin('2')">2</button>
+            <button class="pin-key glass" onclick="pressPin('3')">3</button>
+            <button class="pin-key glass" onclick="pressPin('4')">4</button>
+            <button class="pin-key glass" onclick="pressPin('5')">5</button>
+            <button class="pin-key glass" onclick="pressPin('6')">6</button>
+            <button class="pin-key glass" onclick="pressPin('7')">7</button>
+            <button class="pin-key glass" onclick="pressPin('8')">8</button>
+            <button class="pin-key glass" onclick="pressPin('9')">9</button>
+            <button class="pin-key" disabled></button>
+            <button class="pin-key glass" onclick="pressPin('0')">0</button>
+            <button class="pin-key glass" style="color:#ff0055" onclick="clearPin()">X</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const CONFIG = {
+    ADMIN_TELEGRAM_ID: 8540228131,
+    TELEGRAM_LIEN_COMMANDE: "https://t.me/babydriverss",
+    WHATSAPP_NUMERO: "33748423287",
+    PIN_ADMIN: "2705",
+    FALLBACK_BANNER: "https://raw.githubusercontent.com/miniappprem/image/962d81c243e3bfc46998cd785bc23a6f779de766/839FA3F8-A506-4708-92E5-F9808F651043.jpeg"
+};
+
+const tg = window.Telegram.WebApp;
+const FALLBACK_IMG = CONFIG.FALLBACK_BANNER;
+
+let products = [];
+let cart = JSON.parse(localStorage.getItem("ledesign-cart")) || [];
+let favorites = JSON.parse(localStorage.getItem("ledesign-favs")) || [];
+let orderHistory = JSON.parse(localStorage.getItem("ledesign-orders")) || [];
+
+let currentProduct = null;
+let selectedVariant = null;
+let selectedFormat = "Fichier Numérique";
+let selectedPayment = "VIREMENT BANCAIRE";
+let activeFilter = "";
+let orderSum = 0;
+let enteredPin = "";
+
+let storeInfoText = "Création graphique professionnelle :\n- Logos sur-mesure\n- Animations Vidéo 3D\n- Applications Web\n- Flyers & Stickers\n\nContactez-moi pour un devis personnalisé.";
+let currentBannerUrl = CONFIG.FALLBACK_BANNER;
+let storeBannerText = "LE DESIGNER - CRÉATIONS EXCLUSIVES";
+
+async function init() {
+    await loadSettings();
+    await loadProductsFromFirebase();
+    renderFilters();
+    renderShop();
+    renderCart();
+    renderProfileData();
+    updateBadge();
+    initTelegramApp();
+}
+
+async function loadSettings() {
+    try {
+        const docRef = window.firebaseCollections.doc(window.db, "settings", "global");
+        const docSnap = await window.firebaseCollections.getDoc(docRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            if(data.infoText) storeInfoText = data.infoText;
+            if(data.bannerUrl) currentBannerUrl = data.bannerUrl;
+            if(data.bannerText) storeBannerText = data.bannerText;
+        }
+    } catch(e) {
+        storeInfoText = localStorage.getItem("ledesign-info") || storeInfoText;
+        currentBannerUrl = localStorage.getItem("ledesign-banner") || currentBannerUrl;
+        storeBannerText = localStorage.getItem("ledesign-banner-text") || storeBannerText;
+    }
+    
+    document.getElementById("infoDisplayBox").innerText = storeInfoText;
+    document.getElementById("adminInfoInput").value = storeInfoText;
+    
+    document.getElementById("bannerImg").src = currentBannerUrl;
+    document.getElementById("adminBannerInput").value = currentBannerUrl;
+    
+    document.getElementById("bannerTextDisplay").innerText = storeBannerText;
+    document.getElementById("adminBannerTextInput").value = storeBannerText;
+}
+
+async function loadProductsFromFirebase() {
+    try {
+        const querySnapshot = await window.firebaseCollections.getDocs(window.firebaseCollections.collection(window.db, "products"));
+        if (!querySnapshot.empty) {
+            products = [];
+            querySnapshot.forEach((docSnap) => {
+                products.push({ id: docSnap.id, ...docSnap.data() });
+            });
+        }
+    } catch(e) {
+        products = JSON.parse(localStorage.getItem("ledesign-products")) || [
+            {
+                id: "1", n: "Logo 3D Premium", o: "Graphisme", t: "TOP", d: "Design exclusif 3D.",
+                m: ["https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=600"],
+                v: [{w: "Classique", p: 50}]
+            }
+        ];
+    }
+}
+
+function isVideo(url) {
+    if (!url) return false;
+    let u = url.toLowerCase();
+    return u.match(/\.(mp4|webm|ogg|mov|mkv|avi)$/) || u.includes("video") || u.startsWith("data:video");
+}
+
+function vibe(style = 'light') {
+    if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred(style);
+}
+
+function initTelegramApp() {
+    tg.ready();
+    tg.expand();
+    tg.MainButton.color = "#8a2be2";
+    tg.MainButton.textColor = "#ffffff";
+    
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        let user = tg.initDataUnsafe.user;
+        document.getElementById("tgName").innerText = user.first_name;
+        document.getElementById("tgId").innerText = "ID: " + user.id;
+        if(user.photo_url) document.getElementById("tgAvatar").src = user.photo_url;
+    }
+}
+
+function page(id) {
+    vibe();
+    document.querySelectorAll(".page").forEach(x => x.classList.remove("on"));
+    document.getElementById(id).classList.add("on");
+    document.querySelectorAll(".nav").forEach(x => x.classList.toggle("on", x.dataset.p == id));
+    window.scrollTo(0,0);
+
+    if(id === "profile") renderProfileData();
+    if(id === "cart" && cart.length > 0) {
+        tg.MainButton.setText(`COMMANDER (${orderSum}€)`);
+        tg.MainButton.show();
+    } else {
+        tg.MainButton.hide();
+    }
+}
+
+function showToast(msg) {
+    const tc = document.getElementById("toasts");
+    const t = document.createElement("div");
+    t.className = "toast glass";
+    t.innerHTML = `✨ ${msg}`;
+    tc.appendChild(t);
+    setTimeout(() => t.classList.add("show"), 10);
+    setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 400); }, 3000);
+}
+
+function closeAllModals() {
+    vibe();
+    document.getElementById("overlay").classList.remove("open");
+    ["productDrawer", "pinDrawer"].forEach(id => {
+        if(document.getElementById(id)) document.getElementById(id).classList.remove("open");
+    });
+}
+
+function renderFilters() {
+    let origins = [...new Set(products.map(x=>x.o))].sort();
+    let html = `<button class="filter-pill ${activeFilter===''?'active':''}" onclick="applyFilter('')">Tout</button>`;
+    origins.forEach(o => {
+        html += `<button class="filter-pill ${activeFilter===o?'active':''}" onclick="applyFilter('${o}')">${o}</button>`;
+    });
+    document.getElementById("filterScroll").innerHTML = html;
+}
+
+function toggleCategories() {
+    const fs = document.getElementById("filterScroll");
+    fs.style.display = (fs.style.display === "none") ? "flex" : "none";
+}
+
+function applyFilter(cat) { vibe(); activeFilter = cat; renderFilters(); renderShop(); }
+
+function renderShop() {
+    let q = document.getElementById('search').value.toLowerCase().trim();
+    let a = products.filter(x => (!q || (x.n+" "+x.o).toLowerCase().includes(q)) && (!activeFilter || x.o === activeFilter));
+    document.getElementById("products").innerHTML = a.length ? a.map(buildProductCard).join("") : `<div class="panel glass" style="grid-column:1/-1;text-align:center">Aucun service.</div>`;
+}
+
+function toggleFavorite(e, id) {
+    e.stopPropagation(); vibe('medium');
+    let index = favorites.indexOf(String(id));
+    if (index >= 0) favorites.splice(index, 1);
+    else favorites.push(String(id));
+    
+    localStorage.setItem("ledesign-favs", JSON.stringify(favorites));
+    renderShop();
+    renderProfileData();
+}
+
+function buildProductCard(p) {
+    let minPrice = p.v && p.v.length > 0 ? Math.min(...p.v.map(v => v.p)) : 0;
+    let firstMedia = (p.m && p.m.length > 0 && p.m[0]) ? p.m[0] : FALLBACK_IMG;
+    let isFav = favorites.includes(String(p.id));
+    
+    let mediaHtml = isVideo(firstMedia) 
+        ? `<video src="${firstMedia}" autoplay loop muted playsinline></video>`
+        : `<img src="${firstMedia}" onerror="this.src='${FALLBACK_IMG}'">`;
+
+    return `
+    <article class="card glass glow-border" onclick="openProduct('${p.id}')">
+        <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, '${p.id}')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+        <div class="thumb">${mediaHtml}</div>
+        <span class="tag">${p.t} · ${p.o}</span>
+        <h3>${p.n}</h3>
+        <div class="price">dès ${minPrice}€</div>
+    </article>`;
+}
+
+function openProduct(id) {
+    vibe();
+    currentProduct = products.find(x => String(x.id) === String(id));
+    if(!currentProduct) return;
+    selectedVariant = currentProduct.v[0];
+    selectedFormat = "Fichier Numérique";
+    
+    let mediaContainer = document.getElementById("pmMedia");
+    mediaContainer.innerHTML = currentProduct.m.map(url => {
+        if(isVideo(url)) return `<video class="media-item" src="${url}" autoplay loop muted playsinline></video>`;
+        return `<img class="media-item" src="${url}" onerror="this.src='${FALLBACK_IMG}'">`;
+    }).join("");
+    
+    document.getElementById("pmTitle").innerText = currentProduct.n;
+    document.getElementById("pmTag").innerText = currentProduct.t + " · " + currentProduct.o;
+    document.getElementById("pmDesc").innerText = currentProduct.d || "Description du service.";
+    
+    renderVariants(); updateFormatUI();
+    document.getElementById("overlay").classList.add("open");
+    document.getElementById("productDrawer").classList.add("open");
+}
+
+function renderVariants() {
+    document.getElementById("pmVariants").innerHTML = currentProduct.v.map((v, i) => `
+        <button class="variant-btn glass ${v === selectedVariant ? 'active' : ''}" onclick="vibe(); setVariant(${i})">
+            <span>${v.w}</span><b>${v.p}€</b>
+        </button>`).join("");
+}
+function setVariant(i) { selectedVariant = currentProduct.v[i]; renderVariants(); }
+
+function setFormat(type) { vibe(); selectedFormat = type; updateFormatUI(); }
+
+function updateFormatUI() {
+    document.getElementById('btnFormatNum').classList.toggle('active', selectedFormat === 'Fichier Numérique');
+    document.getElementById('btnFormatImp').classList.toggle('active', selectedFormat === 'Impression Physique');
+}
+
+function addToCartFromModal() {
+    vibe('heavy');
+    let firstMedia = (currentProduct.m && currentProduct.m.length > 0) ? currentProduct.m[0] : FALLBACK_IMG;
+    let existing = cart.find(x => x.id === currentProduct.id && x.w === selectedVariant.w && x.format === selectedFormat);
+    if(existing) existing.qty += 1;
+    else cart.push({ id: currentProduct.id, name: currentProduct.n, m: firstMedia, w: selectedVariant.w, p: selectedVariant.p, format: selectedFormat, qty: 1 });
+    localStorage.setItem("ledesign-cart", JSON.stringify(cart));
+    updateBadge(); closeAllModals(); showToast(`Ajouté au panier !`);
+}
+
+function updateBadge() { document.getElementById("badge").innerText = cart.reduce((s, i) => s + i.qty, 0); }
+
+function updateQty(index, delta) {
+    vibe(); cart[index].qty += delta;
+    if(cart[index].qty <= 0) cart.splice(index, 1);
+    localStorage.setItem("ledesign-cart", JSON.stringify(cart));
+    renderCart(); updateBadge();
+}
+
+function setPayment(method) {
+    vibe(); selectedPayment = method;
+    document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.toggle('active', btn.innerText === method));
+}
+
+function renderCart() {
+    const list = document.getElementById("cartList");
+    const totDiv = document.getElementById("total");
+    const addressBox = document.getElementById("addressBox");
+    const paymentBox = document.getElementById("paymentBox");
+    const impForm = document.getElementById("impressionForm");
+    
+    if(!cart.length) {
+        list.innerHTML = `<p class="muted" style="text-align:center; padding:30px 0;">Panier vide.</p>`;
+        totDiv.innerHTML = ""; addressBox.style.display = "none"; paymentBox.style.display = "none";
+        tg.MainButton.hide();
+        return;
+    }
+    
+    let rawTotal = 0;
+    let hasImpression = false;
+
+    list.innerHTML = cart.map((item, i) => {
+        rawTotal += item.p * item.qty;
+        if(item.format === 'Impression Physique') hasImpression = true;
+
+        let mediaHtml = isVideo(item.m) ? `<video src="${item.m}" autoplay loop muted></video>` : `<img src="${item.m}">`;
+        return `
+        <div class="row glass">
+            ${mediaHtml}
+            <div>
+                <h3>${item.name}</h3>
+                <span class="muted" style="font-size:11px">${item.w} · ${item.format}</span>
+                <div style="color:var(--blue-light); font-weight:900; margin-top:2px">${item.p}€</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <button class="ico" style="width:30px;height:30px" onclick="updateQty(${i}, -1)">-</button>
+                <b>${item.qty}</b>
+                <button class="ico" style="width:30px;height:30px" onclick="updateQty(${i}, 1)">+</button>
+            </div>
+        </div>`;
+    }).join("");
+    
+    let hasDiscount = orderHistory.length > 0;
+    let discountAmount = hasDiscount ? 10 : 0;
+    orderSum = Math.max(0, rawTotal - discountAmount);
+
+    addressBox.style.display = "block";
+    paymentBox.style.display = "block";
+    impForm.style.display = hasImpression ? "block" : "none";
+
+    let discountHtml = hasDiscount 
+        ? `<div class="discount-badge">🎁 Réduction client fidèle : -10€ appliqués !</div>` 
+        : ``;
+
+    totDiv.innerHTML = `
+        ${discountHtml}
+        <div class="total glass">
+            <span>Total Devis</span>
+            <b style="color:var(--purple-light)">${orderSum}€</b>
+        </div>
+        <button class="cta cta-tg glass" onclick="processOrder('telegram')">Commander sur Telegram</button>
+        <button class="cta cta-wa glass" onclick="processOrder('whatsapp')">Commander sur WhatsApp</button>`;
+
+    if(document.getElementById("cart").classList.contains("on")) {
+        tg.MainButton.setText(`COMMANDER SUR TELEGRAM (${orderSum}€)`);
+        tg.MainButton.show();
+    }
+}
+
+function processOrder(platform) {
+    if(!cart.length) return;
+    
+    let hasImpression = cart.some(i => i.format === 'Impression Physique');
+    let clientDetails = document.getElementById("clientDetails").value.trim();
+    let clientCP = document.getElementById("clientCP").value.trim();
+    let clientPhone = document.getElementById("clientPhone").value.trim();
+    let clientAddress = document.getElementById("clientAddress").value.trim();
+    
+    if (hasImpression && (!clientCP || !clientPhone || !clientAddress)) {
+        vibe('heavy'); showToast("⚠️ Adresse complète requise pour l'impression !"); return;
+    }
+
+    let clientName = document.getElementById("tgName").innerText;
+    let newOrder = {
+        date: new Date().toLocaleDateString("fr-FR"),
+        total: orderSum,
+        items: [...cart]
+    };
+    
+    orderHistory.unshift(newOrder);
+    localStorage.setItem("ledesign-orders", JSON.stringify(orderHistory));
+
+    let txt = "🟣 NOUVELLE COMMANDE : LE DESIGNER 🟣\n\n";
+    txt += `👤 Client : ${clientName}\n💳 Paiement : ${selectedPayment}\n`;
+    if(clientDetails) txt += `📝 Détails : ${clientDetails}\n`;
+    if(hasImpression) txt += `\n📍 EXPÉDITION :\nCP : ${clientCP}\nTél : ${clientPhone}\nAdresse : ${clientAddress}\n`;
+    txt += `\n━━━━━━━━━━━━━━━━━━━━\n\n`;
+    cart.forEach(item => { txt += `- ${item.qty}x ${item.name} (${item.w}) | ${item.format} | ${item.p * item.qty}€\n`; });
+    txt += `\n*TOTAL : ${orderSum}€*`;
+
+    let encodedText = encodeURIComponent(txt);
+    if (platform === 'whatsapp') {
+        window.open(`https://wa.me/${CONFIG.WHATSAPP_NUMERO}?text=${encodedText}`, '_blank');
+    } else {
+        tg.openTelegramLink(`${CONFIG.TELEGRAM_LIEN_COMMANDE}?text=${encodedText}`);
+    }
+}
+
+function renderProfileData() {
+    let favProducts = products.filter(p => favorites.includes(String(p.id)));
+    let favContainer = document.getElementById("favoritesList");
+    favContainer.innerHTML = favProducts.length 
+        ? favProducts.map(buildProductCard).join("") 
+        : `<p class="muted" style="grid-column:1/-1; font-size:13px; text-align:center; padding:10px 0;">Aucun favori enregistré.</p>`;
+
+    let ordersContainer = document.getElementById("ordersHistoryList");
+    ordersContainer.innerHTML = orderHistory.length 
+        ? orderHistory.map((o, idx) => `
+            <div class="glass" style="padding:14px; border-radius:18px; border:1px solid var(--border-white);">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <b style="font-size:14px; color:#fff;">Commande #${orderHistory.length - idx}</b>
+                    <small style="color:var(--purple-light); font-weight:700;">${o.date}</small>
+                </div>
+                <div style="font-size:12px; color:var(--muted); font-weight:600;">${o.items.map(i => i.name).join(", ")}</div>
+                <div style="margin-top:8px; font-weight:900; color:var(--blue-light); font-size:15px;">Total : ${o.total}€</div>
+            </div>`).join("")
+        : `<p class="muted" style="font-size:13px; text-align:center; padding:10px 0;">Aucune commande passée.</p>`;
+}
+
+// ADMIN & PIN SÉCURITÉ
+function openPinDrawer() {
+    let currentUserId = tg.initDataUnsafe?.user?.id;
+    if (currentUserId && Number(currentUserId) === CONFIG.ADMIN_TELEGRAM_ID) {
+        vibe('heavy'); showToast("Bienvenue Boss 🔓"); page("adminPage"); renderAdminList(); return;
+    }
+    enteredPin = ""; updatePinDots(); document.getElementById("overlay").classList.add("open"); document.getElementById("pinDrawer").classList.add("open");
+}
+
+function pressPin(num) { vibe('medium'); if(enteredPin.length < 4) { enteredPin += num; updatePinDots(); if(enteredPin.length === 4) setTimeout(verifyPin, 200); } }
+function clearPin() { vibe('light'); enteredPin = ""; updatePinDots(); }
+function updatePinDots() { document.querySelectorAll(".pin-dot").forEach((dot, i) => dot.classList.toggle("filled", i < enteredPin.length)); }
+
+function verifyPin() {
+    let currentUserId = tg.initDataUnsafe?.user?.id;
+    if((currentUserId && Number(currentUserId) === CONFIG.ADMIN_TELEGRAM_ID) || enteredPin === CONFIG.PIN_ADMIN) {
+        vibe('heavy'); showToast("Accès Admin 🔓"); closeAllModals(); page("adminPage"); renderAdminList();
+    } else {
+        vibe('heavy'); showToast("Accès refusé ❌"); enteredPin = ""; updatePinDots();
+    }
+}
+
+function addVariantRow(w = "", p = "") {
+    const div = document.createElement("div"); div.style.display = "flex"; div.style.gap = "8px";
+    div.innerHTML = `
+        <input type="text" class="admin-input v-name" placeholder="Option" value="${w}" style="margin:0; flex:1">
+        <input type="number" class="admin-input v-price" placeholder="Prix €" value="${p}" style="margin:0; width:80px">
+        <button class="admin-btn glass" style="background:#ff0055; color:#fff" onclick="this.parentElement.remove()">X</button>`;
+    document.getElementById("variantsContainer").appendChild(div);
+}
+
+function renderAdminList() {
+    document.getElementById("adminProductsList").innerHTML = products.map(p => `
+        <div class="admin-item glass">
+            <div><b>${p.n}</b><br><small class="muted">${p.o} · ${p.t}</small></div>
+            <div style="display:flex;gap:8px">
+                <button class="admin-btn glass" onclick="editProduct('${p.id}')">✏️</button>
+                <button class="admin-btn glass" style="background:rgba(255,0,85,0.3)" onclick="delProduct('${p.id}')">🗑️</button>
+            </div>
+        </div>`).join("");
+}
+
+function openAdminForm() {
+    document.getElementById("adminFormContainer").style.display = "block";
+    document.getElementById("aId").value = ""; document.getElementById("aTitle").value = ""; document.getElementById("aOrigin").value = ""; document.getElementById("aTag").value = "NEW";
+    document.getElementById("aDesc").value = ""; document.getElementById("aMedia").value = "";
+    document.getElementById("variantsContainer").innerHTML = ""; addVariantRow();
+}
+function closeAdminForm() { vibe(); document.getElementById("adminFormContainer").style.display = "none"; }
+
+function editProduct(id) {
+    vibe(); let p = products.find(x => String(x.id) === String(id)); if(!p) return;
+    openAdminForm();
+    document.getElementById("aId").value = p.id; document.getElementById("aTitle").value = p.n; document.getElementById("aOrigin").value = p.o; document.getElementById("aTag").value = p.t;
+    document.getElementById("aDesc").value = p.d || ""; document.getElementById("aMedia").value = (p.m || []).join(", ");
+    document.getElementById("variantsContainer").innerHTML = ""; p.v.forEach(v => addVariantRow(v.w, v.p));
+}
+
+async function saveProduct() {
+    vibe('heavy');
+    let id = document.getElementById("aId").value || "p_" + Date.now();
+    let mStr = document.getElementById("aMedia").value;
+    let m = mStr ? mStr.split(',').map(s => s.trim()).filter(Boolean) : [FALLBACK_IMG];
+    
+    let v = [];
+    document.querySelectorAll("#variantsContainer > div").forEach(row => {
+        let w = row.querySelector(".v-name").value.trim();
+        let p = Number(row.querySelector(".v-price").value.trim());
+        if(w && p > 0) v.push({w, p});
+    });
+    if(v.length === 0) return showToast("Ajoute au moins une option !");
+
+    let prodData = { id: String(id), n: document.getElementById("aTitle").value, o: document.getElementById("aOrigin").value, t: document.getElementById("aTag").value, d: document.getElementById("aDesc").value, m, v };
+
+    let idx = products.findIndex(x => String(x.id) === String(id));
+    if(idx >= 0) products[idx] = prodData; else products.unshift(prodData);
+
+    localStorage.setItem("ledesign-products", JSON.stringify(products));
+    try { await window.firebaseCollections.setDoc(window.firebaseCollections.doc(window.db, "products", String(id)), prodData); } catch(e) {}
+    
+    closeAdminForm(); renderAdminList(); renderFilters(); renderShop(); showToast("Service sauvegardé !");
+}
+
+async function delProduct(id) {
+    vibe('heavy');
+    if(confirm("Supprimer ce service ?")) {
+        products = products.filter(x => String(x.id) !== String(id));
+        localStorage.setItem("ledesign-products", JSON.stringify(products));
+        try { await window.firebaseCollections.deleteDoc(window.firebaseCollections.doc(window.db, "products", String(id))); } catch(e) {}
+        renderAdminList(); renderFilters(); renderShop(); showToast("Service supprimé");
+    }
+}
+
+async function saveStoreInfo() {
+    vibe('heavy'); storeInfoText = document.getElementById("adminInfoInput").value;
+    document.getElementById("infoDisplayBox").innerText = storeInfoText;
+    localStorage.setItem("ledesign-info", storeInfoText);
+    try { await window.firebaseCollections.setDoc(window.firebaseCollections.doc(window.db, "settings", "global"), { infoText: storeInfoText, bannerUrl: currentBannerUrl, bannerText: storeBannerText }, { merge: true }); showToast("Infos mises à jour !"); } catch(e) {}
+}
+
+async function saveBanner() {
+    vibe('heavy'); 
+    const inputUrl = document.getElementById("adminBannerInput").value.trim();
+    const inputText = document.getElementById("adminBannerTextInput").value.trim();
+    
+    if(inputUrl) {
+        currentBannerUrl = inputUrl; 
+        document.getElementById("bannerImg").src = currentBannerUrl;
+        localStorage.setItem("ledesign-banner", currentBannerUrl);
+    }
+    
+    if(inputText) {
+        storeBannerText = inputText;
+        document.getElementById("bannerTextDisplay").innerText = storeBannerText;
+        localStorage.setItem("ledesign-banner-text", storeBannerText);
+    }
+    
+    try { 
+        await window.firebaseCollections.setDoc(window.firebaseCollections.doc(window.db, "settings", "global"), { infoText: storeInfoText, bannerUrl: currentBannerUrl, bannerText: storeBannerText }, { merge: true }); 
+        showToast("Bannière & Texte mis à jour !"); 
+    } catch(e) {}
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
