@@ -300,8 +300,8 @@ html[dir="rtl"] .search input { padding: 0 50px 0 15px; }
 .drawer.open { transform: translateY(0); }
 .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 
-.pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; max-width: 280px; margin: auto; }
-.pin-key { aspect-ratio: 1/1; border-radius: 50%; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--border-white); font-size: 24px; font-weight: 900; display: grid; place-items: center; }
+.pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); justify-items: center; gap: 15px; width: 100%; max-width: 280px; margin: 0 auto; }
+.pin-key { width: 76px; height: 76px; border-radius: 50%; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--border-white); font-size: 24px; font-weight: 900; display: grid; place-items: center; }
 .pin-dots { display: flex; justify-content: center; gap: 16px; margin: 20px 0 30px; }
 .pin-dot { width: 16px; height: 16px; border-radius: 50%; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--border-white); }
 .pin-dot.filled { background: #38bdf8; box-shadow: 0 0 12px #38bdf8; }
@@ -713,7 +713,7 @@ html[dir="rtl"] .search input { padding: 0 50px 0 15px; }
 </div>
 
 <!-- COFFRE ADMIN PIN -->
-<div id="pinDrawer" class="drawer" style="align-items:center">
+<div id="pinDrawer" class="drawer" style="display:flex; flex-direction:column; align-items:center;">
     <div class="drawer-header" style="width:100%">
         <h3 style="font-weight:900;">Coffre Admin</h3>
         <button class="ico" onclick="closeAllModals()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
@@ -1053,167 +1053,101 @@ function applyTranslations() {
 }
 
 const DEFAULT_PRODUCTS = [
-    /* ================= LOGOS & PROFIL ================= */
+    /* ================= LOGOS (TOUS REGROUPÉS) ================= */
     {
-        id: "p_logo_1", n: "Logo", o: "Logos & Profil", t: "SUR-MESURE",
-        d: "Conception de logo personnalisé sur mesure.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Logo Standard", p: 20 }]
-    },
-    {
-        id: "p_logo_2", n: "Logo Profil", o: "Logos & Profil", t: "AVATAR",
-        d: "Version optimisée pour avatar / photo de profil.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Logo Profil", p: 30 }]
-    },
-    {
-        id: "p_logo_3", n: "Logo Animé", o: "Logos & Profil", t: "MOTION",
-        d: "Animation dynamique / motion de votre logo.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Animation Logo", p: 45 }]
-    },
-
-    /* ================= FLYERS (MENU, INFO, PROMO) ================= */
-    {
-        id: "p_flyer_1", n: "Flyer Info", o: "Flyers", t: "INFO",
-        d: "Flyer clair pour présenter un service, infos pratiques ou règles.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "1 Flyer Info", p: 25 }]
-    },
-    {
-        id: "p_flyer_2", n: "Flyer Promo / Événement", o: "Flyers", t: "PROMO",
-        d: "Flyer percutant pour vos offres ou événements.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "1 Flyer Promo", p: 35 }]
-    },
-    {
-        id: "p_flyer_3", n: "Flyer Menu", o: "Flyers", t: "MENU",
-        d: "Visuel menu soigné, lisible et attractif.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "1 Flyer Menu", p: 40 }]
-    },
-    {
-        id: "p_flyer_4", n: "Flyer Animé", o: "Flyers", t: "ANIMÉ",
-        d: "Version animée et dynamique de votre flyer.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "1 Flyer Animé", p: 55 }]
-    },
-    {
-        id: "p_flyer_5", n: "Pack Flyers (5 Max)", o: "Flyers", t: "PACK",
-        d: "Lot groupé de 5 flyers maximum (menu, info, promo au choix).",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Pack 5 Flyers", p: 115 }]
-    },
-
-    /* ================= STICKERS TELEGRAM & VISUELS COURANTS ================= */
-    {
-        id: "p_stk_1", n: "Stickers Open/Close", o: "Stickers & Visuels", t: "TELEGRAM",
-        d: "Visuels \"Ouvert / Fermé\" personnalisés.",
+        id: "p_logos_all", n: "Logos (Standard, Profil & Animé)", o: "Logos & Profil", t: "SUR-MESURE",
+        d: "Création de votre identité visuelle : Logo standard sur-mesure, version optimisée avatar/profil ou animation motion de votre logo.",
         m: [FALLBACK_IMG],
         v: [
-            { w: "Fixes (Open/Close)", p: 15 },
-            { w: "Animés (Open/Close)", p: 35 }
-        ]
-    },
-    {
-        id: "p_stk_2", n: "Pack 5 Stickers", o: "Stickers & Visuels", t: "STICKERS",
-        d: "Lot de 5 stickers personnalisés optimisés pour Telegram.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "5 Stickers Fixes", p: 35 },
-            { w: "5 Stickers Animés", p: 100 },
-            { w: "5 Animés (3 Canaux)", p: 200 }
-        ]
-    },
-    {
-        id: "p_stk_3", n: "Pack 3 Publications Telegram", o: "Stickers & Visuels", t: "POSTS",
-        d: "3 visuels + textes mis en forme prêts à poster.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "3 Publications", p: 40 }]
-    },
-    {
-        id: "p_stk_4", n: "Bannière (Option)", o: "Stickers & Visuels", t: "OPTION",
-        d: "Bannière adaptée à vos réseaux ou canal.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "1 Bannière", p: 15 }]
-    },
-
-    /* ================= VIDÉOS (3D & MOTION DESIGN) & SNAPCHAT ================= */
-    {
-        id: "p_vid_1", n: "Lens Snap", o: "Vidéos & Snapchat", t: "SNAPCHAT",
-        d: "Création de filtres ou lenses personnalisés pour Snapchat.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "1 Lens Snap", p: 15 }]
-    },
-    {
-        id: "p_vid_2", n: "Vidéo 3D Présentation (15s)", o: "Vidéos & Snapchat", t: "3D TEASER",
-        d: "Format court et percutant (15s) pour présenter un produit ou faire un teaser rapide.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Vidéo 3D 15s", p: 30 }]
-    },
-    {
-        id: "p_vid_3", n: "Vidéo 3D Personnalisée", o: "Vidéos & Snapchat", t: "3D CUSTOM",
-        d: "Création 3D sur-mesure avec mise en scène, ambiance et réglages adaptés.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Vidéo 3D Sur-Mesure", p: 60 }]
-    },
-    {
-        id: "p_vid_4", n: "Longue Vidéo Motion Design", o: "Vidéos & Snapchat", t: "MOTION",
-        d: "Animation graphique dynamique, typographie, transitions et rythme travaillé.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Motion Design Long", p: 95 }]
-    },
-    {
-        id: "p_vid_5", n: "Longue Vidéo 3D (Plusieurs Scénarios)", o: "Vidéos & Snapchat", t: "3D PRO",
-        d: "Vidéo longue avec plusieurs séquences/scénarios et rendu complet.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Vidéo 3D Multi-Scènes", p: 120 }]
-    },
-    {
-        id: "p_vid_6", n: "Pack Snapchat", o: "Vidéos & Snapchat", t: "PACK SNAP",
-        d: "Ensemble d'éléments graphiques dédiés à Snapchat.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Pack Complet Snap", p: 95 }]
-    },
-    {
-        id: "p_vid_7", n: "Déclinaisons Rapides (Vidéos)", o: "Vidéos & Snapchat", t: "DÉCLINAISON",
-        d: "Adaptation d'une vidéo déjà réalisée à d'autres formats (Story / Reel / Carré) ou thème événementiel (Halloween, Noël, Nouvel An, etc.).",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Format Réseaux (+20€)", p: 20 },
-            { w: "Thème Événement (+30€)", p: 30 },
-            { w: "Création Événement Dédiée", p: 90 }
+            { w: "Logo Standard", p: 20 },
+            { w: "Logo Profil / Avatar", p: 30 },
+            { w: "Logo Animé (Motion)", p: 45 }
         ]
     },
 
-    /* ================= MINI APPS, SITES & OPTIONS ================= */
+    /* ================= FLYERS (TOUS REGROUPÉS) ================= */
     {
-        id: "p_web_1", n: "Vitrine Shop", o: "Mini Apps & Sites", t: "CATALOGUE",
-        d: "Menu avec photos et prix (consultation uniquement, sans commande).",
+        id: "p_flyers_all", n: "Flyers (Info, Promo, Menu & Animé)", o: "Flyers", t: "VISUELS",
+        d: "Flyers clairs et percutants pour vos menus, infos pratiques, promotions ou événements. Disponible en fixe, animé ou en pack groupé.",
         m: [FALLBACK_IMG],
-        v: [{ w: "Vitrine Shop", p: 120 }]
+        v: [
+            { w: "1 Flyer Info", p: 25 },
+            { w: "1 Flyer Promo / Événement", p: 35 },
+            { w: "1 Flyer Menu", p: 40 },
+            { w: "1 Flyer Animé", p: 55 },
+            { w: "Pack 5 Flyers (au choix)", p: 115 }
+        ]
     },
+
+    /* ================= STICKERS TELEGRAM (TOUS REGROUPÉS) ================= */
     {
-        id: "p_web_2", n: "Mini App Basique", o: "Mini Apps & Sites", t: "MINI APP",
-        d: "Commande + panier + photos des produits + prix + contact + liens réseaux.",
+        id: "p_stickers_all", n: "Stickers Telegram (Open/Close & Packs)", o: "Stickers & Visuels", t: "TELEGRAM",
+        d: "Stickers personnalisés optimisés pour Telegram : visuels Ouvert/Fermé ou pack de 5 stickers fixes ou animés.",
         m: [FALLBACK_IMG],
-        v: [{ w: "Mini App Basique", p: 200 }]
+        v: [
+            { w: "Open/Close Fixes", p: 15 },
+            { w: "Open/Close Animés", p: 35 },
+            { w: "Pack 5 Stickers Fixes", p: 35 },
+            { w: "Pack 5 Stickers Animés", p: 100 },
+            { w: "Pack 5 Animés (3 Canaux)", p: 200 }
+        ]
     },
+
+    /* ================= VISUELS CANAL (PUBLICATIONS & BANNIÈRE) ================= */
     {
-        id: "p_web_3", n: "Mini App Premium", o: "Mini Apps & Sites", t: "BEST-SELLER",
-        d: "Tout ce qui est dans la Basique + accès admin + vidéos en plus des photos + Logo + 5 Stickers offerts.",
+        id: "p_visuels_canal", n: "Bannière & Publications Telegram", o: "Stickers & Visuels", t: "HABILLAGE",
+        d: "Bannière adaptée à vos réseaux/canal ou pack de 3 publications Telegram (visuels + textes mis en forme prêts à poster).",
         m: [FALLBACK_IMG],
-        v: [{ w: "Mini App Premium", p: 290 }]
+        v: [
+            { w: "1 Bannière Réseaux / Canal", p: 15 },
+            { w: "Pack 3 Publications Telegram", p: 40 }
+        ]
     },
+
+    /* ================= VIDÉOS 3D & MOTION DESIGN (TOUTES REGROUPÉES) ================= */
     {
-        id: "p_web_4", n: "Site Internet", o: "Mini Apps & Sites", t: "WEB",
-        d: "Site web complet, moderne et responsive.",
+        id: "p_videos_all", n: "Vidéos 3D & Motion Design", o: "Vidéos & Snapchat", t: "3D / MOTION",
+        d: "Créations vidéo 3D et Motion Design : teaser court 15s, vidéo 3D sur-mesure, motion design long ou multi-scénarios.",
         m: [FALLBACK_IMG],
-        v: [{ w: "Site Internet Complet", p: 340 }]
+        v: [
+            { w: "Vidéo 3D Présentation (15s)", p: 30 },
+            { w: "Vidéo 3D Personnalisée", p: 60 },
+            { w: "Longue Vidéo Motion Design", p: 95 },
+            { w: "Longue Vidéo 3D Multi-Scènes", p: 120 }
+        ]
     },
+
+    /* ================= SNAPCHAT & DÉCLINAISONS VIDÉO ================= */
     {
-        id: "p_web_5", n: "Options Supplémentaires (Mini App / Réseaux)", o: "Mini Apps & Sites", t: "OPTIONS",
-        d: "Modules additionnels non inclus de base : Thème Événement, Traducteur Multilingue, Jeu de la Roue, Carte de Fidélité 3D, Map 360° / Visite Virtuelle, Calculateur de Devis.",
+        id: "p_snap_declinaisons", n: "Snapchat (Lens / Pack) & Déclinaisons Vidéo", o: "Vidéos & Snapchat", t: "SNAP & FORMATS",
+        d: "Filtres/Lenses Snapchat, Pack graphique complet Snap ou déclinaisons de vos vidéos (formats Story/Reel ou thème événementiel).",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "1 Lens Snap", p: 15 },
+            { w: "Déclinaison Format (Story/Reel)", p: 20 },
+            { w: "Déclinaison Thème Événement", p: 30 },
+            { w: "Création Vidéo Événement Dédiée", p: 90 },
+            { w: "Pack Complet Snapchat", p: 95 }
+        ]
+    },
+
+    /* ================= MINI APPS & SITES WEB (TOUS REGROUPÉS) ================= */
+    {
+        id: "p_web_apps", n: "Mini Apps & Sites Internet", o: "Mini Apps & Sites", t: "WEB / APP",
+        d: "• Vitrine Shop : Catalogue photos & prix (sans panier).\n• Mini App Basique : Panier, commande, photos & contact.\n• Mini App Premium : Accès admin + vidéos + Logo & 5 Stickers offerts.\n• Site Internet : Site web complet & responsive.",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Vitrine Shop", p: 120 },
+            { w: "Mini App Basique", p: 200 },
+            { w: "Mini App Premium (Cadeaux inclus)", p: 290 },
+            { w: "Site Internet Complet", p: 340 }
+        ]
+    },
+
+    /* ================= OPTIONS SUPPLÉMENTAIRES MINI APP / WEB ================= */
+    {
+        id: "p_web_options", n: "Modules & Options Mini App / Web", o: "Mini Apps & Sites", t: "OPTIONS",
+        d: "Modules additionnels au choix : Map 360° / Visite virtuelle, Thème événementiel, Traducteur multilingue, Jeu de la Roue, Calculateur de devis ou Carte de Fidélité 3D.",
         m: [FALLBACK_IMG],
         v: [
             { w: "Map 360° / Visite Virtuelle", p: 35 },
@@ -1225,177 +1159,117 @@ const DEFAULT_PRODUCTS = [
         ]
     },
 
-    /* ================= BOTS & CANAUX TELEGRAM ================= */
+    /* ================= BOTS TELEGRAM (TOUS REGROUPÉS) ================= */
     {
-        id: "p_bot_1", n: "Bot Réseaux", o: "Bots & Telegram", t: "BOT",
-        d: "Bot avec boutons liens vers tous vos réseaux.",
+        id: "p_bots_all", n: "Bots Telegram (Réseaux, Secur, Menu & Complet)", o: "Bots & Telegram", t: "BOTS",
+        d: "Bots Telegram automatisés sur-mesure : boutons réseaux, sécurité de groupe/canal, menu interactif ou bot multifonction complet.",
         m: [FALLBACK_IMG],
-        v: [{ w: "Bot Réseaux", p: 40 }]
+        v: [
+            { w: "Bot Réseaux", p: 40 },
+            { w: "Bot Secur", p: 60 },
+            { w: "Bot Menu Automatisé", p: 100 },
+            { w: "Bot Complet All-In-One", p: 150 }
+        ]
     },
+
+    /* ================= CANAUX TELEGRAM (KIT & REFONTE) ================= */
     {
-        id: "p_bot_2", n: "Bot Secur", o: "Bots & Telegram", t: "SÉCURITÉ",
-        d: "Bot de sécurité pour protéger groupes ou canaux.",
+        id: "p_canaux_all", n: "Habillage & Remise à Neuf de Canaux", o: "Bots & Telegram", t: "CANAL PRO",
+        d: "Kit complet d'habillage visuel pour lancer votre canal ou restructuration complète de canaux existants.",
         m: [FALLBACK_IMG],
-        v: [{ w: "Bot Secur", p: 60 }]
-    },
-    {
-        id: "p_bot_3", n: "Bot Menu", o: "Bots & Telegram", t: "AUTOMATISÉ",
-        d: "Bot de menu interactif et automatisé.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Bot Menu", p: 100 }]
-    },
-    {
-        id: "p_bot_4", n: "Bot Complet", o: "Bots & Telegram", t: "ALL-IN-ONE",
-        d: "Bot multifonction (gestion, menus, sécurité avancée).",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Bot Complet", p: 150 }]
-    },
-    {
-        id: "p_bot_5", n: "Pack Telegram", o: "Bots & Telegram", t: "KIT CANAL",
-        d: "Kit complet d'habillage et de visuels pour développer un canal.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Pack Telegram", p: 130 }]
-    },
-    {
-        id: "p_bot_6", n: "Remise à neuf de canaux", o: "Bots & Telegram", t: "REFONTE",
-        d: "Restructuration complète et optimisation visuelle de canaux existants.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Remise à neuf Canal", p: 160 }]
+        v: [
+            { w: "Pack Habillage Telegram", p: 130 },
+            { w: "Remise à Neuf de Canal", p: 160 }
+        ]
     },
 
     /* ================= PACKS & GROSSES COMMANDES ================= */
     {
-        id: "p_pack_1", n: "Pack Starter Logo & Stickers", o: "Packs & Offres", t: "STARTER",
-        d: "1 Logo (ou Logo Profil) + 5 Stickers fixes + 1 Flyer Info.",
+        id: "p_packs_all", n: "Packs Tout-En-Un & Grosses Commandes", o: "Packs & Offres", t: "OFFRES PACKS",
+        d: "• Starter : Logo + 5 Stickers fixes + 1 Flyer Info.\n• Boost : Logo + Flyer Menu/Promo + 5 Stickers + 3 posts TG.\n• Campagne Vidéo : Longue Vidéo 3D + Vidéo 3D 15s.\n• Full Vidéo : Longue Motion + Vidéo 3D Perso.\n• Canal + Mini App Premium : Refonte + Mini App + Logo + 5 Stickers + Vidéo 3D 15s offerts.\n• Ultime All-In : Refonte + Mini App Premium + Bot Complet + Map 360° + 3 posts + cadeaux.",
         m: [FALLBACK_IMG],
-        v: [{ w: "Pack Starter", p: 70 }]
-    },
-    {
-        id: "p_pack_2", n: "Pack Boost Canal & Visuels", o: "Packs & Offres", t: "BOOST",
-        d: "1 Logo + 1 Flyer Menu/Promo + 5 Stickers fixes + 3 publications Telegram.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Pack Boost", p: 100 }]
-    },
-    {
-        id: "p_pack_3", n: "Pack Campagne Vidéo", o: "Packs & Offres", t: "VIDÉO",
-        d: "Longue Vidéo 3D (Plusieurs Scénarios) + 1 Vidéo 3D Présentation (15s).",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Pack Campagne Vidéo", p: 130 }]
-    },
-    {
-        id: "p_pack_4", n: "Pack Full Vidéo", o: "Packs & Offres", t: "MOTION + 3D",
-        d: "Longue Vidéo Motion Design + Vidéo 3D Personnalisée.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Pack Full Vidéo", p: 140 }]
-    },
-    {
-        id: "p_pack_5", n: "Pack Canal + Mini App Premium", o: "Packs & Offres", t: "CADEAUX INCLUS",
-        d: "Remise à neuf de canal + Mini App Premium (accès admin & vidéos) + Logo + 5 Stickers offerts + Vidéo 3D 15s offerte (au lieu de 450€ + cadeaux).",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Pack Canal + Mini App", p: 380 }]
-    },
-    {
-        id: "p_pack_6", n: "Pack Ultime / All-In", o: "Packs & Offres", t: "ULTIME",
-        d: "Remise à neuf de canal + Mini App Premium + Bot Complet + Map 360° + 3 publications Telegram + Logo + 5 Stickers offerts + Vidéo 3D 15s offerte.",
-        m: [FALLBACK_IMG],
-        v: [{ w: "Pack Ultime / All-In", p: 520 }]
+        v: [
+            { w: "Pack Starter Logo & Stickers", p: 70 },
+            { w: "Pack Boost Canal & Visuels", p: 100 },
+            { w: "Pack Campagne Vidéo", p: 130 },
+            { w: "Pack Full Vidéo (Motion + 3D)", p: 140 },
+            { w: "Pack Canal + Mini App Premium", p: 380 },
+            { w: "Pack Ultime / All-In", p: 520 }
+        ]
     },
 
-    /* ================= IMPRESSION & MERCH (MONDIAL RELAY INCLUS) ================= */
+    /* ================= FEUILLES À ROULER (PERSO & NORMALES) ================= */
     {
-        id: "p_imp_1", n: "Feuilles Perso (Carnets + Présentoir)", o: "Impression & Merch", t: "MONDIAL RELAY",
-        d: "Carnets 100% personnalisés + présentoir + livraison Mondial Relay incluse.\nFormats : Feuilles Slim ou Feuilles Slim + Carton (Tips).",
+        id: "p_feuilles_all", n: "Feuilles à Rouler (Perso & Classiques)", o: "Impression & Merch", t: "MONDIAL RELAY",
+        d: "Carnets personnalisés (avec présentoir) ou marques classiques sans personnalisation. Livraison Mondial Relay incluse.",
         m: [FALLBACK_IMG],
         v: [
-            { w: "100 carnets (Slim)", p: 165 },
-            { w: "100 carnets (Slim + Tips)", p: 180 },
-            { w: "250 carnets (Slim)", p: 340 },
-            { w: "250 carnets (Slim + Tips)", p: 375 },
-            { w: "500 carnets (Slim)", p: 570 },
-            { w: "500 carnets (Slim + Tips)", p: 630 },
-            { w: "1000 carnets (Slim)", p: 970 },
-            { w: "1000 carnets (Slim + Tips)", p: 1070 }
+            { w: "Classiques 50 carnets (Slim)", p: 60 },
+            { w: "Classiques 50 carnets (Slim + Tips)", p: 70 },
+            { w: "Classiques 100 carnets (Slim)", p: 120 },
+            { w: "Classiques 100 carnets (Slim + Tips)", p: 140 },
+            { w: "Perso 100 carnets (Slim)", p: 165 },
+            { w: "Perso 100 carnets (Slim + Tips)", p: 180 },
+            { w: "Classiques 250 carnets (Slim)", p: 270 },
+            { w: "Classiques 250 carnets (Slim + Tips)", p: 280 },
+            { w: "Perso 250 carnets (Slim)", p: 340 },
+            { w: "Perso 250 carnets (Slim + Tips)", p: 375 },
+            { w: "Perso 500 carnets (Slim)", p: 570 },
+            { w: "Perso 500 carnets (Slim + Tips)", p: 630 },
+            { w: "Perso 1000 carnets (Slim)", p: 970 },
+            { w: "Perso 1000 carnets (Slim + Tips)", p: 1070 }
         ]
     },
+
+    /* ================= BRIQUETS (BASIQUE, CLIPPER, PERSO & NORMAUX) ================= */
     {
-        id: "p_imp_2", n: "Feuilles Normales (Sans Perso)", o: "Impression & Merch", t: "MONDIAL RELAY",
-        d: "Marques classiques – Sans personnalisation, livraison Mondial Relay incluse.",
+        id: "p_briquets_all", n: "Briquets (Basique & Clipper / Perso ou Normaux)", o: "Impression & Merch", t: "BRIQUETS",
+        d: "Briquets Basiques ou Clipper : personnalisés sur-mesure (avec présentoir) ou sans personnalisation. Mondial Relay inclus.",
         m: [FALLBACK_IMG],
         v: [
-            { w: "50 carnets (Slim)", p: 60 },
-            { w: "50 carnets (Slim + Tips)", p: 70 },
-            { w: "100 carnets (Slim)", p: 120 },
-            { w: "100 carnets (Slim + Tips)", p: 140 },
-            { w: "250 carnets (Slim)", p: 270 },
-            { w: "250 carnets (Slim + Tips)", p: 280 }
+            { w: "Normaux Basique - 50 pcs", p: 60 },
+            { w: "Perso Basique - 50 pcs", p: 80 },
+            { w: "Normaux Clipper - 50 pcs", p: 90 },
+            { w: "Normaux Basique - 100 pcs", p: 100 },
+            { w: "Perso Clipper - 50 pcs", p: 120 },
+            { w: "Normaux Clipper - 100 pcs", p: 150 },
+            { w: "Perso Basique - 100 pcs", p: 160 },
+            { w: "Perso Clipper - 100 pcs", p: 210 },
+            { w: "Normaux Basique - 250 pcs", p: 220 },
+            { w: "Perso Basique - 250 pcs", p: 265 },
+            { w: "Normaux Clipper - 250 pcs", p: 290 },
+            { w: "Perso Clipper - 250 pcs", p: 380 },
+            { w: "Perso Basique - 500 pcs", p: 485 },
+            { w: "Perso Clipper - 500 pcs", p: 690 },
+            { w: "Perso Basique - 1000 pcs", p: 890 },
+            { w: "Perso Clipper - 1000 pcs", p: 1250 }
         ]
     },
+
+    /* ================= CARTES DE FIDÉLITÉ & VISITE (BASIQUES & PREMIUM) ================= */
     {
-        id: "p_imp_3", n: "Briquets Basiques Perso", o: "Impression & Merch", t: "PERSO + RELAY",
-        d: "Briquet Basique (Électrique / Pierre classique) – Design sur-mesure + présentoir + Mondial Relay inclus.",
+        id: "p_cartes_all", n: "Cartes de Fidélité & Visite (Basiques & Premium)", o: "Impression & Merch", t: "IMPRESSION",
+        d: "• Basiques : Papier épais standard, coins droits, finition brillante ou standard.\n• Premium : Coins arrondis + texture Mat / Soft-Touch ou Holographique.\nLivraison Mondial Relay incluse.",
         m: [FALLBACK_IMG],
         v: [
-            { w: "50 pièces", p: 80 },
-            { w: "100 pièces", p: 160 },
-            { w: "250 pièces", p: 265 },
-            { w: "500 pièces", p: 485 },
-            { w: "1000 pièces", p: 890 }
+            { w: "Tampon Encreur Perso", p: 20 },
+            { w: "Basiques - 100 pièces", p: 60 },
+            { w: "Premium (Mat/Holo) - 100 pièces", p: 80 },
+            { w: "Basiques - 250 pièces", p: 120 },
+            { w: "Premium (Mat/Holo) - 250 pièces", p: 120 },
+            { w: "Basiques - 500 pièces", p: 200 },
+            { w: "Premium (Mat/Holo) - 500 pièces", p: 230 },
+            { w: "Basiques - 1000 pièces", p: 350 },
+            { w: "Premium (Mat/Holo) - 1000 pièces", p: 440 },
+            { w: "Basiques - 2500 pièces", p: 560 },
+            { w: "Premium (Mat/Holo) - 2500 pièces", p: 660 }
         ]
     },
+
+    /* ================= AUTOCOLLANTS / STICKERS IMPRIMÉS ================= */
     {
-        id: "p_imp_4", n: "Briquets Clipper Perso", o: "Impression & Merch", t: "CLIPPER PERSO",
-        d: "Briquet Clipper Perso (Rechargeable / Pierre amovible) – Design sur-mesure + présentoir + Mondial Relay inclus.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "50 pièces", p: 120 },
-            { w: "100 pièces", p: 210 },
-            { w: "250 pièces", p: 380 },
-            { w: "500 pièces", p: 690 },
-            { w: "1000 pièces", p: 1250 }
-        ]
-    },
-    {
-        id: "p_imp_5", n: "Briquets Normaux (Sans Perso)", o: "Impression & Merch", t: "MONDIAL RELAY",
-        d: "Briquets sans personnalisation (Basique ou Clipper assortiment classique) – Mondial Relay inclus.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Basique 50 pcs", p: 60 },
-            { w: "Basique 100 pcs", p: 100 },
-            { w: "Basique 250 pcs", p: 220 },
-            { w: "Clipper 50 pcs", p: 90 },
-            { w: "Clipper 100 pcs", p: 150 },
-            { w: "Clipper 250 pcs", p: 290 }
-        ]
-    },
-    {
-        id: "p_imp_6", n: "Cartes de Fidélité & Visite Basiques", o: "Impression & Merch", t: "MONDIAL RELAY",
-        d: "Papier épais standard, coins droits, finition brillante ou standard – Mondial Relay inclus.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "100 pièces", p: 60 },
-            { w: "250 pièces", p: 120 },
-            { w: "500 pièces", p: 200 },
-            { w: "1000 pièces", p: 350 },
-            { w: "2500 pièces", p: 560 },
-            { w: "Tampon Encreur Perso", p: 20 }
-        ]
-    },
-    {
-        id: "p_imp_7", n: "Cartes de Fidélité & Visite Premium", o: "Impression & Merch", t: "HOLO / MAT",
-        d: "Coins arrondis + Texture Mat / Soft-Touch ou Holographique – Mondial Relay inclus.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "100 pièces", p: 80 },
-            { w: "250 pièces", p: 120 },
-            { w: "500 pièces", p: 230 },
-            { w: "1000 pièces", p: 440 },
-            { w: "2500 pièces", p: 660 },
-            { w: "Tampon Encreur Perso", p: 20 }
-        ]
-    },
-    {
-        id: "p_imp_8", n: "Autocollants Perso", o: "Impression & Merch", t: "STICKERS PRO",
-        d: "Rond, Carré, Découpe ou Holographique – Mondial Relay inclus.",
+        id: "p_autocollants_all", n: "Autocollants Perso (Rond, Carré, Découpe, Holo)", o: "Impression & Merch", t: "STICKERS PRO",
+        d: "Autocollants personnalisés haute qualité : Rond, Carré, Découpe à la forme ou Holographique. Mondial Relay inclus.",
         m: [FALLBACK_IMG],
         v: [
             { w: "100 pièces", p: 80 },
@@ -1405,62 +1279,56 @@ const DEFAULT_PRODUCTS = [
             { w: "2500 pièces", p: 300 }
         ]
     },
+
+    /* ================= QR CODE, NFC & PORTE-CLÉS ================= */
     {
-        id: "p_imp_9", n: "Scan QR Code / NFC (Plaques & Chevalets)", o: "Impression & Merch", t: "NFC / QR",
-        d: "Plaques & Chevalets personnalisés QR Code / NFC – Mondial Relay inclus.",
+        id: "p_nfc_qr_all", n: "Plaques QR/NFC & Porte-Clés Perso", o: "Impression & Merch", t: "NFC / QR",
+        d: "Supports connectés personnalisés : Plaques & Chevalets QR Code / NFC ou Porte-clés avec Logo, QR Code ou puce NFC. Mondial Relay inclus.",
         m: [FALLBACK_IMG],
         v: [
-            { w: "1 pièce", p: 30 },
-            { w: "5 pièces", p: 50 },
-            { w: "10 pièces", p: 80 },
-            { w: "20 pièces", p: 120 }
+            { w: "Plaque / Chevalet QR-NFC (1 pc)", p: 30 },
+            { w: "Plaques / Chevalets QR-NFC (5 pcs)", p: 50 },
+            { w: "Porte-Clés Logo/QR/NFC (25 pcs)", p: 60 },
+            { w: "Plaques / Chevalets QR-NFC (10 pcs)", p: 80 },
+            { w: "Porte-Clés Logo/QR/NFC (50 pcs)", p: 80 },
+            { w: "Plaques / Chevalets QR-NFC (20 pcs)", p: 120 },
+            { w: "Porte-Clés Logo/QR/NFC (100 pcs)", p: 120 }
         ]
     },
+
+    /* ================= TABLEAUX DÉCO & GRANDS FORMATS / DRAPEAUX ================= */
     {
-        id: "p_imp_10", n: "Porte-Clés Personnalisables", o: "Impression & Merch", t: "LOGO / NFC",
-        d: "Porte-clés avec Logo, QR Code ou Puce NFC – Mondial Relay inclus.",
+        id: "p_deco_grandformat", n: "Tableaux Déco, Drapeaux & Banderoles Perso", o: "Impression & Merch", t: "GRAND FORMAT",
+        d: "Tableaux décoratifs sur-mesure ou gros drapeaux, bannières, banderoles (avec œillets) et beachflags. Design & Mondial Relay inclus.",
         m: [FALLBACK_IMG],
         v: [
-            { w: "25 pièces", p: 60 },
-            { w: "50 pièces", p: 80 },
-            { w: "100 pièces", p: 120 }
-        ]
-    },
-    {
-        id: "p_imp_11", n: "Tableaux Déco Perso", o: "Impression & Merch", t: "DÉCO",
-        d: "Plusieurs tailles et designs sur-mesure – Mondial Relay inclus.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Petit (30 × 40 cm)", p: 50 },
-            { w: "Moyen (50 × 70 cm)", p: 80 },
-            { w: "Grand (60 × 90 cm)", p: 100 },
-            { w: "XXL (80 × 120 cm)", p: 120 }
-        ]
-    },
-    {
-        id: "p_imp_12", n: "Gros Drapeaux, Bannières & Banderoles Perso", o: "Impression & Merch", t: "GRAND FORMAT",
-        d: "Design inclus + Œillets + Mondial Relay inclus.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Compact (1,5m × 0,8m)", p: 50 },
-            { w: "Moyen (2m × 1m)", p: 80 },
-            { w: "Grand (3m × 1,5m)", p: 120 },
-            { w: "Géant / XXL (4m × 2m)", p: 140 },
+            { w: "Tableau Petit (30 × 40 cm)", p: 50 },
+            { w: "Bannière Compacte (1,5m × 0,8m)", p: 50 },
+            { w: "Tableau Moyen (50 × 70 cm)", p: 80 },
+            { w: "Bannière Moyenne (2m × 1m)", p: 80 },
+            { w: "Tableau Grand (60 × 90 cm)", p: 100 },
+            { w: "Tableau XXL (80 × 120 cm)", p: 120 },
+            { w: "Bannière Grande (3m × 1,5m)", p: 120 },
+            { w: "Bannière Géante XXL (4m × 2m)", p: 140 },
             { w: "Beachflag / Oriflamme (2,5m-3m)", p: 160 }
         ]
     },
+
+    /* ================= BOX PHOTO STUDIO LED ================= */
     {
-        id: "p_imp_13", n: "Box Photo Studio LED", o: "Impression & Merch", t: "STUDIO LED",
-        d: "Pliable avec éclairage LED + fonds de couleur – Mondial Relay inclus.",
+        id: "p_box_led", n: "Box Photo Studio LED", o: "Impression & Merch", t: "STUDIO LED",
+        d: "Box photo pliable avec éclairage LED intégré et fonds de couleur pour vos shootings produits. Mondial Relay inclus.",
         m: [FALLBACK_IMG],
         v: [
             { w: "Standard (40 × 40 cm)", p: 80 },
             { w: "XL Pro (60 × 60 cm)", p: 120 }
         ]
     },
+
+    /* ================= FIGURINE 3D PERSONNALISÉE ================= */
     {
-        id: "p_imp_14", n: "Figurine 3D Personnalisée", o: "Impression & Merch", t: "FIGURINE 3D",
-        d: "Figurine 3D sur-mesure avec livraison Mondial Relay incluse.",
+        id: "p_figurine_3d", n: "Figurine 3D Personnalisée", o: "Impression & Merch", t: "FIGURINE 3D",
+        d: "Figurine 3D imprimée sur-mesure d'après votre personnage ou logo. Livraison Mondial Relay incluse.",
         m: [FALLBACK_IMG],
         v: [
             { w: "Basique", p: 60 },
@@ -1582,21 +1450,24 @@ async function loadSettings() {
 }
 
 async function loadProductsFromFirebase() {
-    let loaded = false;
+    const remoteMap = new Map();
+    let deletedIds = load("ledesign-deleted", []);
+
     try {
         const snap = await fb().getDocs(fb().collection(window.db, "products"));
-        if (!snap.empty) {
-            products = [];
-            snap.forEach(d => products.push({ id: d.id, ...d.data() }));
-            loaded = true;
-        }
-    } catch (e) { console.warn("Firebase indisponible, catalogue par défaut utilisé", e); }
-
-    if (!loaded) {
-        products = DEFAULT_PRODUCTS.slice();
+        snap.forEach(d => remoteMap.set(String(d.id), { id: String(d.id), ...d.data() }));
+    } catch (e) {
+        console.warn("Firebase indisponible, catalogue par défaut utilisé", e);
     }
 
-    products = products
+    const base = DEFAULT_PRODUCTS
+        .filter(p => !deletedIds.includes(String(p.id)))
+        .map(p => remoteMap.has(String(p.id)) ? remoteMap.get(String(p.id)) : p);
+
+    const defaultIds = new Set(DEFAULT_PRODUCTS.map(p => String(p.id)));
+    const custom = [...remoteMap.values()].filter(p => !defaultIds.has(String(p.id)));
+
+    products = [...custom, ...base]
         .filter(p => p && p.n)
         .map(p => ({
             ...p,
@@ -1608,10 +1479,6 @@ async function loadProductsFromFirebase() {
         }))
         .filter(p => p.v.length);
 
-    if (loaded) {
-        const ts = p => Number(String(p.id).replace("p_", "")) || 0;
-        products.sort((a, b) => ts(b) - ts(a));
-    }
     save("ledesign-products", products);
 }
 
@@ -1717,7 +1584,6 @@ function mediaTag(url, attrs = "") {
         : `<img src="${esc(url)}" loading="lazy" ${attrs} onerror="this.onerror=null;this.src='${FALLBACK_IMG}'">`;
 }
 
-/* Mise à jour des points de pagination lors du défilement horizontal sur une carte */
 function syncThumbDots(track) {
     const dotsBox = track.parentElement.querySelector(".thumb-dots");
     if (!dotsBox || !track.clientWidth) return;
@@ -2233,6 +2099,10 @@ async function delProduct(id) {
     if (!isAdmin()) return showToast("Session admin expirée");
     vibe("heavy");
     if (confirm("Supprimer ce service ?")) {
+        const deletedIds = load("ledesign-deleted", []);
+        if (!deletedIds.includes(String(id))) deletedIds.push(String(id));
+        save("ledesign-deleted", deletedIds);
+
         products = products.filter(x => String(x.id) !== String(id));
         save("ledesign-products", products);
         let remoteOk = true;
