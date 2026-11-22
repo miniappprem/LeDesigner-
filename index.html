@@ -631,9 +631,9 @@ html[dir="rtl"] .search input { padding: 0 50px 0 15px; }
         </div>
 
         <div style="margin-bottom:20px; padding:18px; background:rgba(0,85,255,0.14); border-radius:20px; border:1px solid rgba(56,189,248,0.45); width:100%;">
-            <h3 style="margin-top:0; font-size:15px; font-weight:800; color:#38bdf8;">Synchroniser Packs Séparés & Briquets</h3>
-            <p class="muted" style="font-size:12px; margin:0 0 10px;">Envoie chaque Pack séparément, les Briquets filtrables et les Impressions dans Firebase sans toucher à tes autres créations.</p>
-            <button class="cta glass" style="margin:0; padding:14px; background:var(--btn-gradient);" onclick="seedPresetsToFirebase()">🚀 Importer dans Firebase</button>
+            <h3 style="margin-top:0; font-size:15px; font-weight:800; color:#38bdf8;">Synchroniser Nouveau Catalogue Officiel</h3>
+            <p class="muted" style="font-size:12px; margin:0 0 10px;">Écrase les anciens tarifs par défaut avec le nouveau catalogue officiel dans Firebase (sans toucher à tes créations perso).</p>
+            <button class="cta glass" style="margin:0; padding:14px; background:var(--btn-gradient);" onclick="seedPresetsToFirebase()">🚀 Synchroniser Catalogue dans Firebase</button>
         </div>
 
         <button class="cta glass" onclick="vibe(); openAdminForm()">+ Ajouter une Création</button>
@@ -1065,173 +1065,380 @@ function applyTranslations() {
     renderProfileData();
 }
 
-/* Anciens IDs regroupés à ignorer automatiquement pour ne pas faire doublon */
-const LEGACY_GROUPED_IDS = new Set([
-    "p_packs_all",
-    "p_briquets_all",
-    "p_cartes_all",
-    "p_autocollants_all",
-    "p_feuilles_all"
-]);
-
+/* ================= CATALOGUE OFFICIEL — CRÉATION, TECH & MERCH ================= */
 const DEFAULT_PRODUCTS = [
-    /* ================= PACKS INDIVIDUELS (CHACUN DANS SA CASE) ================= */
+    /* --- LOGOS & PROFIL --- */
     {
-        id: "preset_pack_starter",
-        n: "🚀 Pack Starter — Logo & Stickers",
-        o: "Packs & Offres",
-        sub: "Packs",
-        t: "STARTER",
-        d: "L'essentiel pour lancer ton image :\n• 1 Logo Standard sur-mesure\n• 5 Stickers Telegram Fixes\n• 1 Flyer Info prêt à publier",
+        id: "cat_logos_profil",
+        n: "🔥 Logos & Profil",
+        o: "Logos & Profil",
+        sub: "Logos",
+        t: "CRÉATION",
+        d: "Création sur-mesure de ton identité visuelle :\n• Logo : 20€\n• Profil : 30€\n• Animé : 40€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "Pack Starter Complet", p: 70 },
-            { w: "Option + Logo Animé", p: 90 }
+            { w: "Logo", p: 20 },
+            { w: "Profil", p: 30 },
+            { w: "Animé", p: 40 }
+        ]
+    },
+
+    /* --- FLYERS --- */
+    {
+        id: "cat_flyers",
+        n: "📄 Flyers (Info, Promo/Évent, Menu & Animé)",
+        o: "Flyers",
+        sub: "Flyers",
+        t: "VISUELS",
+        d: "Flyers sur-mesure prêts à diffuser :\n• Info : 20€\n• Promo / Évent : 30€\n• Menu : 40€\n• Animé : 50€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Info", p: 20 },
+            { w: "Promo / Évent", p: 30 },
+            { w: "Menu", p: 40 },
+            { w: "Animé", p: 50 }
+        ]
+    },
+
+    /* --- STICKERS & VISUELS TELEGRAM --- */
+    {
+        id: "cat_stickers_tg",
+        n: "🎯 Stickers Telegram (Open/Close & Packs)",
+        o: "Stickers & Visuels TG",
+        sub: "Stickers",
+        t: "TELEGRAM",
+        d: "Stickers personnalisés Telegram :\n• Stickers Open/Close : 15€ (Animés : 30€)\n• Pack 5 Stickers : 35€ (Animés : 80€ | Animés 3 canaux : 160€)",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Stickers Open/Close (Fixe)", p: 15 },
+            { w: "Stickers Open/Close (Animés)", p: 30 },
+            { w: "Pack 5 Stickers (Fixe)", p: 35 },
+            { w: "Pack 5 Stickers (Animés)", p: 80 },
+            { w: "Pack 5 Stickers Animés (3 canaux)", p: 160 }
         ]
     },
     {
-        id: "preset_pack_boost",
-        n: "⚡ Pack Boost — Canal & Visuels",
-        o: "Packs & Offres",
+        id: "cat_banniere_tg",
+        n: "🎯 Bannière Telegram / Réseaux",
+        o: "Stickers & Visuels TG",
+        sub: "Bannière",
+        t: "HABILLAGE",
+        d: "Bannière sur-mesure pour canal Telegram ou profils réseaux :\n• Bannière : 15€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Bannière", p: 15 }
+        ]
+    },
+
+    /* --- VIDÉOS (3D / MOTION) & SNAP --- */
+    {
+        id: "cat_videos_snap",
+        n: "🎥 Vidéos (3D / Motion) & Lens Snap",
+        o: "Vidéos & Snap",
+        sub: "3D / Motion / Snap",
+        t: "3D & SNAP",
+        d: "Créations vidéo 3D, Motion Design et Snapchat :\n• Lens Snap : 15€\n• Vidéo 3D 15s : 30€\n• 3D Perso : 60€\n• Longue Motion : 90€\n• Longue 3D : 120€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Lens Snap", p: 15 },
+            { w: "Vidéo 3D 15s", p: 30 },
+            { w: "3D Perso", p: 60 },
+            { w: "Longue Motion", p: 90 },
+            { w: "Longue 3D", p: 120 }
+        ]
+    },
+    {
+        id: "cat_videos_options",
+        n: "🎥 Options Vidéos (Format & Thème Évent)",
+        o: "Vidéos & Snap",
+        sub: "Options Vidéo",
+        t: "OPTIONS",
+        d: "Déclinaisons et options pour tes vidéos :\n• Déclinaison format : +20€\n• Thème évent : +30€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Déclinaison format", p: 20 },
+            { w: "Thème évent", p: 30 }
+        ]
+    },
+
+    /* --- MINI APPS, SITES & OPTIONS --- */
+    {
+        id: "cat_miniapps_sites",
+        n: "📱 Mini Apps & Sites Web",
+        o: "Mini Apps & Sites",
+        sub: "Web & Mini Apps",
+        t: "TECH / WEB",
+        d: "Développement sur-mesure :\n• Vitrine Shop : 120€\n• Mini App Basique : 200€\n• Mini App Premium (+ cadeaux) : 290€\n• Site Web : 340€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Vitrine Shop", p: 120 },
+            { w: "Mini App Basique", p: 200 },
+            { w: "Mini App Premium (+ cadeaux)", p: 290 },
+            { w: "Site Web", p: 340 }
+        ]
+    },
+    {
+        id: "cat_miniapps_options",
+        n: "📱 Options Mini Apps & Sites Web",
+        o: "Mini Apps & Sites",
+        sub: "Options Web",
+        t: "MODULES",
+        d: "Modules et options additionnelles :\n• Map 360° / Thème Évent / Multilingue : +40€\n• Roue / Devis / Fidélité 3D : +50€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Map 360°", p: 40 },
+            { w: "Thème Évent", p: 40 },
+            { w: "Multilingue", p: 40 },
+            { w: "Roue", p: 50 },
+            { w: "Devis", p: 50 },
+            { w: "Fidélité 3D", p: 50 }
+        ]
+    },
+
+    /* --- BOTS & CANAUX TELEGRAM --- */
+    {
+        id: "cat_bots_tg",
+        n: "🤖 Bots Telegram (Réseaux, Secur, Menu & Complet)",
+        o: "Bots & Canaux TG",
+        sub: "Bots TG",
+        t: "BOTS",
+        d: "Bots Telegram automatisés :\n• Bot Réseaux : 40€\n• Bot Secur : 60€\n• Bot Menu : 100€\n• Bot Complet : 150€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Bot Réseaux", p: 40 },
+            { w: "Bot Secur", p: 60 },
+            { w: "Bot Menu", p: 100 },
+            { w: "Bot Complet", p: 150 }
+        ]
+    },
+    {
+        id: "cat_remise_canal",
+        n: "🤖 Remise à neuf canal Telegram",
+        o: "Bots & Canaux TG",
+        sub: "Canaux TG",
+        t: "CANAL PRO",
+        d: "Refonte & remise à neuf complète de ton canal Telegram :\n• Remise à neuf canal : 160€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Remise à neuf canal", p: 160 }
+        ]
+    },
+
+    /* --- PACKS (SUR-MESURE POSSIBLE) --- */
+    {
+        id: "pack_3pubs",
+        n: "🎁 Pack 3 Pubs TG/Potato",
+        o: "Packs",
+        sub: "Packs",
+        t: "PACK",
+        d: "3 publications promotionnelles TG / Potato (sur-mesure possible).",
+        m: [FALLBACK_IMG],
+        v: [{ w: "3 Pubs TG/Potato", p: 50 }]
+    },
+    {
+        id: "pack_basique",
+        n: "🎁 Pack Basique (Logo + 5 Stickers)",
+        o: "Packs",
+        sub: "Packs",
+        t: "PACK",
+        d: "Logo + Pack 5 Stickers Telegram (sur-mesure possible).",
+        m: [FALLBACK_IMG],
+        v: [{ w: "Basique (Logo + 5 Stickers)", p: 50 }]
+    },
+    {
+        id: "pack_start",
+        n: "🎁 Pack Start (Logo + 5 Stickers + Flyer Info)",
+        o: "Packs",
+        sub: "Packs",
+        t: "PACK",
+        d: "Logo + Pack 5 Stickers + Flyer Info (sur-mesure possible).",
+        m: [FALLBACK_IMG],
+        v: [{ w: "Start (Logo + 5 Stickers + Flyer Info)", p: 70 }]
+    },
+    {
+        id: "pack_snap",
+        n: "🎁 Pack Snap",
+        o: "Packs",
+        sub: "Packs",
+        t: "PACK",
+        d: "Pack complet dédié Snapchat (sur-mesure possible).",
+        m: [FALLBACK_IMG],
+        v: [{ w: "Pack Snap", p: 90 }]
+    },
+    {
+        id: "pack_boost",
+        n: "🎁 Pack Boost (Logo + Profil + Flyer + 5 Stickers + 3 Pubs)",
+        o: "Packs",
         sub: "Packs",
         t: "POPULAIRE",
-        d: "Idéal pour dynamiser ton canal :\n• 1 Logo Profil / Avatar\n• 1 Flyer Menu ou Promo\n• 5 Stickers Telegram Fixes\n• Pack 3 Publications Telegram",
+        d: "Logo + Profil + Flyer + 5 Stickers + 3 Pubs (sur-mesure possible).",
         m: [FALLBACK_IMG],
-        v: [
-            { w: "Pack Boost Complet", p: 100 },
-            { w: "Option + Stickers Animés", p: 155 }
-        ]
+        v: [{ w: "Boost (Logo + Profil + Flyer + 5 Stickers + 3 Pubs)", p: 100 }]
     },
     {
-        id: "preset_pack_video",
-        n: "🎬 Pack Campagne Vidéo 3D",
-        o: "Packs & Offres",
+        id: "pack_flyer",
+        n: "🎁 Pack Flyer (5 max)",
+        o: "Packs",
         sub: "Packs",
-        t: "VIDÉO 3D",
-        d: "Impact maximal sur tes réseaux :\n• 1 Longue Vidéo 3D Multi-Scènes\n• 1 Vidéo 3D Teaser (15s)\n• Déclinaison format Story / Reel offerte",
+        t: "PACK",
+        d: "Jusqu'à 5 flyers au choix (sur-mesure possible).",
         m: [FALLBACK_IMG],
-        v: [
-            { w: "Pack Campagne Vidéo 3D", p: 130 },
-            { w: "Pack Full Motion + 3D Perso", p: 140 }
-        ]
+        v: [{ w: "Pack Flyer (5 max)", p: 120 }]
     },
     {
-        id: "preset_pack_canal_miniapp",
-        n: "💎 Pack Canal + Mini App Premium",
-        o: "Packs & Offres",
+        id: "pack_tg",
+        n: "🎁 Pack TG",
+        o: "Packs",
         sub: "Packs",
+        t: "PACK",
+        d: "Pack visuel complet Telegram (sur-mesure possible).",
+        m: [FALLBACK_IMG],
+        v: [{ w: "Pack TG", p: 130 }]
+    },
+    {
+        id: "pack_movie",
+        n: "🎁 Pack Movie",
+        o: "Packs",
+        sub: "Packs",
+        t: "PACK",
+        d: "Pack vidéo / movie complet (sur-mesure possible).",
+        m: [FALLBACK_IMG],
+        v: [{ w: "Pack Movie", p: 130 }]
+    },
+    {
+        id: "pack_pro",
+        n: "🎁 Pack Pro (Remise à neuf + Mini App Basique + Logo + 5 Stickers Fixes offerts)",
+        o: "Packs",
+        sub: "PRO",
         t: "BEST-SELLER",
-        d: "Ton écosystème complet clé en main :\n• Remise à neuf complète de ton Canal\n• Mini App Premium (avec Console Admin)\n• 🎁 OFFERTS : Logo + 5 Stickers + Vidéo 3D 15s",
+        d: "Remise à neuf canal + Mini App Basique + Logo + 5 Stickers Fixes offerts (sur-mesure possible).",
         m: [FALLBACK_IMG],
-        v: [
-            { w: "Pack Canal + Mini App Premium", p: 380 }
-        ]
+        v: [{ w: "Pro (Remise à neuf + Mini App Basique + Logo + 5 Stickers Fixes offerts)", p: 380 }]
     },
     {
-        id: "preset_pack_ultime",
-        n: "👑 Pack Ultime All-In-One",
-        o: "Packs & Offres",
+        id: "pack_premium",
+        n: "🎁 Pack Premium (Remise à neuf + Mini App Premium + Bot Complet + Logo + 5 Stickers Animés + Flyer)",
+        o: "Packs",
         sub: "Packs",
         t: "VIP ALL-IN",
-        d: "La solution totale n°1 :\n• Refonte complète Canal Telegram\n• Mini App Premium + Map 360°\n• Bot Complet All-In-One\n• 3 Publications + Cadeaux exclusifs inclus",
+        d: "Remise à neuf + Mini App Premium + Bot Complet + Logo + 5 Stickers Animés + Flyer (sur-mesure possible).",
         m: [FALLBACK_IMG],
-        v: [
-            { w: "Pack Ultime All-In-One", p: 520 }
-        ]
+        v: [{ w: "Premium (Remise à neuf + Mini App Premium + Bot Complet + Logo + 5 Stickers Animés + Flyer)", p: 450 }]
     },
 
-    /* ================= BRIQUETS (FILTRABLES PAR TYPE) ================= */
+    /* --- IMPRESSION & MERCH (LIVRAISON MONDIAL RELAY INCLUSE) --- */
     {
-        id: "preset_briquet_basique_normaux",
-        n: "🔥 Briquets Basiques (Sans Perso)",
-        o: "🔥 Briquets",
-        sub: "Briquet Basique",
-        t: "STOCK PRO",
-        d: "Lot de briquets classiques fiables prêts à l'emploi. Livraison Mondial Relay incluse.",
+        id: "merch_feuilles_perso",
+        n: "📄 Feuilles Perso (+ présentoir & Tips)",
+        o: "Impression & Merch",
+        sub: "Feuilles",
+        t: "MONDIAL RELAY",
+        d: "Feuilles personnalisées (+ présentoir inclus). Livraison Mondial Relay incluse.\n• 100 : 165€ | 250 : 340€ | 500 : 570€ | 1000 : 970€\n• Options Tips : +15€ à +100€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "50 pièces", p: 60 },
-            { w: "100 pièces", p: 100 },
-            { w: "250 pièces", p: 220 }
+            { w: "100 (+ présentoir)", p: 165 },
+            { w: "250 (+ présentoir)", p: 340 },
+            { w: "500 (+ présentoir)", p: 570 },
+            { w: "1000 (+ présentoir)", p: 970 },
+            { w: "Option Tips (+15€)", p: 15 },
+            { w: "Option Tips (+100€)", p: 100 }
         ]
     },
     {
-        id: "preset_briquet_basique_perso",
-        n: "🔥 Briquets Basiques Personnalisés",
-        o: "🔥 Briquets",
-        sub: "Briquet Perso",
-        t: "PERSO + PRÉSENTOIR",
-        d: "Briquets personnalisés à ton image avec présentoir inclus. Design & livraison Mondial Relay inclus.",
+        id: "merch_feuilles_normales",
+        n: "📄 Feuilles Normales (Slim & Avec Tips)",
+        o: "Impression & Merch",
+        sub: "Feuilles",
+        t: "MONDIAL RELAY",
+        d: "Feuilles normales. Livraison Mondial Relay incluse.\n• Slim 50 / 100 / 250 : 60€ / 120€ / 270€\n• Avec Tips 50 / 100 / 250 : 70€ / 140€ / 280€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "50 pièces", p: 80 },
-            { w: "100 pièces", p: 160 },
-            { w: "250 pièces", p: 265 },
-            { w: "500 pièces", p: 485 },
-            { w: "1000 pièces", p: 890 }
+            { w: "Slim 50", p: 60 },
+            { w: "Slim 100", p: 120 },
+            { w: "Slim 250", p: 270 },
+            { w: "Avec Tips 50", p: 70 },
+            { w: "Avec Tips 100", p: 140 },
+            { w: "Avec Tips 250", p: 280 }
         ]
     },
     {
-        id: "preset_briquet_clipper_normaux",
-        n: "🔥 Briquets Clipper (Sans Perso)",
-        o: "🔥 Briquets",
-        sub: "Briquet Clipper",
-        t: "CLIPPER",
-        d: "Lot de véritables briquets Clipper rechargeables. Livraison Mondial Relay incluse.",
+        id: "merch_briquets_basiques_perso",
+        n: "🔥 Briquets Basiques Perso (+ présentoir)",
+        o: "Impression & Merch",
+        sub: "Briquets Perso",
+        t: "MONDIAL RELAY",
+        d: "Briquets basiques personnalisés (+ présentoir). Livraison Mondial Relay incluse.\n• 50 : 80€ | 100 : 160€ | 250 : 265€ | 500 : 485€ | 1000 : 890€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "50 pièces", p: 90 },
-            { w: "100 pièces", p: 150 },
-            { w: "250 pièces", p: 290 }
+            { w: "50 (+ présentoir)", p: 80 },
+            { w: "100 (+ présentoir)", p: 160 },
+            { w: "250 (+ présentoir)", p: 265 },
+            { w: "500 (+ présentoir)", p: 485 },
+            { w: "1000 (+ présentoir)", p: 890 }
         ]
     },
     {
-        id: "preset_briquet_clipper_perso",
-        n: "🔥 Briquets Clipper Personnalisés",
-        o: "🔥 Briquets",
-        sub: "Briquet Perso",
-        t: "CLIPPER PERSO",
-        d: "Briquets Clipper officiels personnalisés avec ton visuel + présentoir. Mondial Relay inclus.",
+        id: "merch_briquets_clipper_perso",
+        n: "🔥 Briquets Clipper Perso (+ présentoir)",
+        o: "Impression & Merch",
+        sub: "Briquets Perso",
+        t: "MONDIAL RELAY",
+        d: "Briquets Clipper personnalisés (+ présentoir). Livraison Mondial Relay incluse.\n• 50 : 120€ | 100 : 210€ | 250 : 380€ | 500 : 690€ | 1000 : 1250€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "50 pièces", p: 120 },
-            { w: "100 pièces", p: 210 },
-            { w: "250 pièces", p: 380 },
-            { w: "500 pièces", p: 690 },
-            { w: "1000 pièces", p: 1250 }
+            { w: "50 (+ présentoir)", p: 120 },
+            { w: "100 (+ présentoir)", p: 210 },
+            { w: "250 (+ présentoir)", p: 380 },
+            { w: "500 (+ présentoir)", p: 690 },
+            { w: "1000 (+ présentoir)", p: 1250 }
         ]
     },
-
-    /* ================= CARTES & AUTOCOLLANTS REGROUPÉS PAR QUANTITÉ ================= */
     {
-        id: "preset_cartes_fidelite",
-        n: "💳 Cartes de Fidélité & Visite Perso",
+        id: "merch_briquets_normaux",
+        n: "🔥 Briquets Normaux (Basique & Clipper)",
+        o: "Impression & Merch",
+        sub: "Briquets Normaux",
+        t: "MONDIAL RELAY",
+        d: "Briquets normaux. Livraison Mondial Relay incluse.\n• Basique 50 / 100 / 250 : 60€ / 100€ / 220€\n• Clipper 50 / 100 / 250 : 90€ / 150€ / 290€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Basique 50", p: 60 },
+            { w: "Basique 100", p: 100 },
+            { w: "Basique 250", p: 220 },
+            { w: "Clipper 50", p: 90 },
+            { w: "Clipper 100", p: 150 },
+            { w: "Clipper 250", p: 290 }
+        ]
+    },
+    {
+        id: "merch_cartes_fidelite",
+        n: "💳 Cartes Fidélité/Visite (Basique, Premium & Tampon)",
         o: "Impression & Merch",
         sub: "Cartes",
-        t: "IMPRESSION",
-        d: "• Basiques : Papier épais standard, coins droits, finition brillante ou standard.\n• Premium : Coins arrondis + texture Mat / Soft-Touch ou Holographique.\nLivraison Mondial Relay incluse.",
+        t: "MONDIAL RELAY",
+        d: "Cartes fidélité/visite. Livraison Mondial Relay incluse.\n• Basique 100 / 250 / 500 / 1000 / 2500 : 60€ / 120€ / 200€ / 350€ / 560€\n• Premium 100 / 250 / 500 / 1000 / 2500 : 80€ / 120€ / 230€ / 440€ / 660€\n• Tampon : +20€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "Tampon Encreur Perso", p: 20 },
-            { w: "Basiques — 100 pièces", p: 60 },
-            { w: "Premium (Mat/Holo) — 100 pièces", p: 80 },
-            { w: "Basiques — 250 pièces", p: 120 },
-            { w: "Premium (Mat/Holo) — 250 pièces", p: 120 },
-            { w: "Basiques — 500 pièces", p: 200 },
-            { w: "Premium (Mat/Holo) — 500 pièces", p: 230 },
-            { w: "Basiques — 1000 pièces", p: 350 },
-            { w: "Premium (Mat/Holo) — 1000 pièces", p: 440 },
-            { w: "Basiques — 2500 pièces", p: 560 },
-            { w: "Premium (Mat/Holo) — 2500 pièces", p: 660 }
+            { w: "Basique 100", p: 60 },
+            { w: "Basique 250", p: 120 },
+            { w: "Basique 500", p: 200 },
+            { w: "Basique 1000", p: 350 },
+            { w: "Basique 2500", p: 560 },
+            { w: "Premium 100", p: 80 },
+            { w: "Premium 250", p: 120 },
+            { w: "Premium 500", p: 230 },
+            { w: "Premium 1000", p: 440 },
+            { w: "Premium 2500", p: 660 },
+            { w: "Option Tampon", p: 20 }
         ]
     },
     {
-        id: "preset_autocollants",
-        n: "🏷️ Autocollants Perso (Rond, Carré, Découpe, Holo)",
+        id: "merch_autocollants_perso",
+        n: "🏷️ Autocollants Perso",
         o: "Impression & Merch",
-        sub: "Stickers",
-        t: "STICKERS PRO",
-        d: "Autocollants personnalisés haute qualité : Rond, Carré, Découpe à la forme ou Holographique. Mondial Relay inclus.",
+        sub: "Autocollants",
+        t: "MONDIAL RELAY",
+        d: "Autocollants personnalisés. Livraison Mondial Relay incluse.\n• 100 : 80€ | 250 : 120€ | 500 : 140€ | 1000 : 180€ | 2500 : 300€",
         m: [FALLBACK_IMG],
         v: [
             { w: "100 pièces", p: 80 },
@@ -1242,188 +1449,162 @@ const DEFAULT_PRODUCTS = [
         ]
     },
     {
-        id: "preset_feuilles_rouler",
-        n: "📄 Feuilles à Rouler (Perso & Classiques)",
+        id: "merch_plaques_qr_nfc",
+        n: "📲 Plaques QR / NFC",
         o: "Impression & Merch",
-        sub: "Feuilles",
+        sub: "QR / NFC",
         t: "MONDIAL RELAY",
-        d: "Carnets personnalisés (avec présentoir) ou marques classiques sans personnalisation. Livraison Mondial Relay incluse.",
+        d: "Plaques QR / NFC personnalisées. Livraison Mondial Relay incluse.\n• 1 : 30€ | 5 : 50€ | 10 : 80€ | 20 : 120€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "Classiques 50 carnets (Slim)", p: 60 },
-            { w: "Classiques 50 carnets (Slim + Tips)", p: 70 },
-            { w: "Classiques 100 carnets (Slim)", p: 120 },
-            { w: "Classiques 100 carnets (Slim + Tips)", p: 140 },
-            { w: "Perso 100 carnets (Slim)", p: 165 },
-            { w: "Perso 100 carnets (Slim + Tips)", p: 180 },
-            { w: "Classiques 250 carnets (Slim)", p: 270 },
-            { w: "Classiques 250 carnets (Slim + Tips)", p: 280 },
-            { w: "Perso 250 carnets (Slim)", p: 340 },
-            { w: "Perso 250 carnets (Slim + Tips)", p: 375 },
-            { w: "Perso 500 carnets (Slim)", p: 570 },
-            { w: "Perso 500 carnets (Slim + Tips)", p: 630 },
-            { w: "Perso 1000 carnets (Slim)", p: 970 },
-            { w: "Perso 1000 carnets (Slim + Tips)", p: 1070 }
-        ]
-    },
-
-    /* ================= SERVICES DIGITAUX & IMPRESSIONS COMPLÉMENTAIRES ================= */
-    {
-        id: "p_logos_all", n: "Logos (Standard, Profil & Animé)", o: "Logos & Profil", t: "SUR-MESURE",
-        d: "Création de votre identité visuelle : Logo standard sur-mesure, version optimisée avatar/profil ou animation motion de votre logo.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Logo Standard", p: 20 },
-            { w: "Logo Profil / Avatar", p: 30 },
-            { w: "Logo Animé (Motion)", p: 45 }
+            { w: "1 plaque", p: 30 },
+            { w: "5 plaques", p: 50 },
+            { w: "10 plaques", p: 80 },
+            { w: "20 plaques", p: 120 }
         ]
     },
     {
-        id: "p_flyers_all", n: "Flyers (Info, Promo, Menu & Animé)", o: "Flyers", t: "VISUELS",
-        d: "Flyers clairs et percutants pour vos menus, infos pratiques, promotions ou événements. Disponible en fixe, animé ou en pack groupé.",
+        id: "merch_porte_cles",
+        n: "🔑 Porte-Clés Perso (Logo/QR/NFC)",
+        o: "Impression & Merch",
+        sub: "Porte-Clés",
+        t: "MONDIAL RELAY",
+        d: "Porte-clés personnalisés (Logo / QR / NFC). Livraison Mondial Relay incluse.\n• 25 : 60€ | 50 : 80€ | 100 : 120€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "1 Flyer Info", p: 25 },
-            { w: "1 Flyer Promo / Événement", p: 35 },
-            { w: "1 Flyer Menu", p: 40 },
-            { w: "1 Flyer Animé", p: 55 },
-            { w: "Pack 5 Flyers (au choix)", p: 115 }
+            { w: "25 porte-clés", p: 60 },
+            { w: "50 porte-clés", p: 80 },
+            { w: "100 porte-clés", p: 120 }
         ]
     },
     {
-        id: "p_stickers_all", n: "Stickers Telegram (Open/Close & Packs)", o: "Stickers & Visuels", t: "TELEGRAM",
-        d: "Stickers personnalisés optimisés pour Telegram : visuels Ouvert/Fermé ou pack de 5 stickers fixes ou animés.",
+        id: "merch_tableaux_deco",
+        n: "🖼️ Tableaux Déco Perso",
+        o: "Impression & Merch",
+        sub: "Tableaux & Grand Format",
+        t: "MONDIAL RELAY",
+        d: "Tableaux déco personnalisés. Livraison Mondial Relay incluse.\n• 30×40 : 50€ | 50×70 : 80€ | 60×90 : 100€ | 80×120 : 120€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "Open/Close Fixes", p: 15 },
-            { w: "Open/Close Animés", p: 35 },
-            { w: "Pack 5 Stickers Fixes", p: 35 },
-            { w: "Pack 5 Stickers Animés", p: 100 },
-            { w: "Pack 5 Animés (3 Canaux)", p: 200 }
+            { w: "30×40 cm", p: 50 },
+            { w: "50×70 cm", p: 80 },
+            { w: "60×90 cm", p: 100 },
+            { w: "80×120 cm", p: 120 }
         ]
     },
     {
-        id: "p_visuels_canal", n: "Bannière & Publications Telegram", o: "Stickers & Visuels", t: "HABILLAGE",
-        d: "Bannière adaptée à vos réseaux/canal ou pack de 3 publications Telegram (visuels + textes mis en forme prêts à poster).",
+        id: "merch_drapeaux_banderoles",
+        n: "🚩 Drapeaux & Banderoles",
+        o: "Impression & Merch",
+        sub: "Tableaux & Grand Format",
+        t: "MONDIAL RELAY",
+        d: "Drapeaux, banderoles & beachflags. Livraison Mondial Relay incluse.\n• 1,5×0,8m : 50€ | 2×1m : 80€ | 3×1,5m : 120€ | 4×2m : 140€ | Beachflag : 160€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "1 Bannière Réseaux / Canal", p: 15 },
-            { w: "Pack 3 Publications Telegram", p: 40 }
+            { w: "1,5×0,8m", p: 50 },
+            { w: "2×1m", p: 80 },
+            { w: "3×1,5m", p: 120 },
+            { w: "4×2m", p: 140 },
+            { w: "Beachflag", p: 160 }
         ]
     },
     {
-        id: "p_videos_all", n: "Vidéos 3D & Motion Design", o: "Vidéos & Snapchat", t: "3D / MOTION",
-        d: "Créations vidéo 3D et Motion Design : teaser court 15s, vidéo 3D sur-mesure, motion design long ou multi-scénarios.",
+        id: "merch_box_photo_led",
+        n: "💡 Box Photo LED & Plateau Tournant",
+        o: "Impression & Merch",
+        sub: "Studio & Accessoires",
+        t: "MONDIAL RELAY",
+        d: "Box photo LED et plateau tournant. Livraison Mondial Relay incluse.\n• Box Photo LED 40×40cm : 80€ | 60×60cm : 120€ | Plateau Tournant : 40€",
         m: [FALLBACK_IMG],
         v: [
-            { w: "Vidéo 3D Présentation (15s)", p: 30 },
-            { w: "Vidéo 3D Personnalisée", p: 60 },
-            { w: "Longue Vidéo Motion Design", p: 95 },
-            { w: "Longue Vidéo 3D Multi-Scènes", p: 120 }
+            { w: "Box Photo LED 40×40cm", p: 80 },
+            { w: "Box Photo LED 60×60cm", p: 120 },
+            { w: "Plateau Tournant", p: 40 }
         ]
     },
     {
-        id: "p_snap_declinaisons", n: "Snapchat (Lens / Pack) & Déclinaisons Vidéo", o: "Vidéos & Snapchat", t: "SNAP & FORMATS",
-        d: "Filtres/Lenses Snapchat, Pack graphique complet Snap ou déclinaisons de vos vidéos (formats Story/Reel ou thème événementiel).",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "1 Lens Snap", p: 15 },
-            { w: "Déclinaison Format (Story/Reel)", p: 20 },
-            { w: "Déclinaison Thème Événement", p: 30 },
-            { w: "Création Vidéo Événement Dédiée", p: 90 },
-            { w: "Pack Complet Snapchat", p: 95 }
-        ]
-    },
-    {
-        id: "p_web_apps", n: "Mini Apps & Sites Internet", o: "Mini Apps & Sites", t: "WEB / APP",
-        d: "• Vitrine Shop : Catalogue photos & prix (sans panier).\n• Mini App Basique : Panier, commande, photos & contact.\n• Mini App Premium : Accès admin + vidéos + Logo & 5 Stickers offerts.\n• Site Internet : Site web complet & responsive.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Vitrine Shop", p: 120 },
-            { w: "Mini App Basique", p: 200 },
-            { w: "Mini App Premium (Cadeaux inclus)", p: 290 },
-            { w: "Site Internet Complet", p: 340 }
-        ]
-    },
-    {
-        id: "p_web_options", n: "Modules & Options Mini App / Web", o: "Mini Apps & Sites", t: "OPTIONS",
-        d: "Modules additionnels au choix : Map 360° / Visite virtuelle, Thème événementiel, Traducteur multilingue, Jeu de la Roue, Calculateur de devis ou Carte de Fidélité 3D.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Map 360° / Visite Virtuelle", p: 35 },
-            { w: "Thème d'Événement", p: 40 },
-            { w: "Traducteur / Multilingue", p: 40 },
-            { w: "Jeu de la Roue", p: 45 },
-            { w: "Calculateur de Devis", p: 45 },
-            { w: "Carte de Fidélité 3D", p: 50 }
-        ]
-    },
-    {
-        id: "p_bots_all", n: "Bots Telegram (Réseaux, Secur, Menu & Complet)", o: "Bots & Telegram", t: "BOTS",
-        d: "Bots Telegram automatisés sur-mesure : boutons réseaux, sécurité de groupe/canal, menu interactif ou bot multifonction complet.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Bot Réseaux", p: 40 },
-            { w: "Bot Secur", p: 60 },
-            { w: "Bot Menu Automatisé", p: 100 },
-            { w: "Bot Complet All-In-One", p: 150 }
-        ]
-    },
-    {
-        id: "p_canaux_all", n: "Habillage & Remise à Neuf de Canaux", o: "Bots & Telegram", t: "CANAL PRO",
-        d: "Kit complet d'habillage visuel pour lancer votre canal ou restructuration complète de canaux existants.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Pack Habillage Telegram", p: 130 },
-            { w: "Remise à Neuf de Canal", p: 160 }
-        ]
-    },
-    {
-        id: "p_nfc_qr_all", n: "Plaques QR/NFC & Porte-Clés Perso", o: "Impression & Merch", t: "NFC / QR",
-        d: "Supports connectés personnalisés : Plaques & Chevalets QR Code / NFC ou Porte-clés avec Logo, QR Code ou puce NFC. Mondial Relay inclus.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Plaque / Chevalet QR-NFC (1 pc)", p: 30 },
-            { w: "Plaques / Chevalets QR-NFC (5 pcs)", p: 50 },
-            { w: "Porte-Clés Logo/QR/NFC (25 pcs)", p: 60 },
-            { w: "Plaques / Chevalets QR-NFC (10 pcs)", p: 80 },
-            { w: "Porte-Clés Logo/QR/NFC (50 pcs)", p: 80 },
-            { w: "Plaques / Chevalets QR-NFC (20 pcs)", p: 120 },
-            { w: "Porte-Clés Logo/QR/NFC (100 pcs)", p: 120 }
-        ]
-    },
-    {
-        id: "p_deco_grandformat", n: "Tableaux Déco, Drapeaux & Banderoles Perso", o: "Impression & Merch", t: "GRAND FORMAT",
-        d: "Tableaux décoratifs sur-mesure ou gros drapeaux, bannières, banderoles (avec œillets) et beachflags. Design & Mondial Relay inclus.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Tableau Petit (30 × 40 cm)", p: 50 },
-            { w: "Bannière Compacte (1,5m × 0,8m)", p: 50 },
-            { w: "Tableau Moyen (50 × 70 cm)", p: 80 },
-            { w: "Bannière Moyenne (2m × 1m)", p: 80 },
-            { w: "Tableau Grand (60 × 90 cm)", p: 100 },
-            { w: "Tableau XXL (80 × 120 cm)", p: 120 },
-            { w: "Bannière Grande (3m × 1,5m)", p: 120 },
-            { w: "Bannière Géante XXL (4m × 2m)", p: 140 },
-            { w: "Beachflag / Oriflamme (2,5m-3m)", p: 160 }
-        ]
-    },
-    {
-        id: "p_box_led", n: "Box Photo Studio LED", o: "Impression & Merch", t: "STUDIO LED",
-        d: "Box photo pliable avec éclairage LED intégré et fonds de couleur pour vos shootings produits. Mondial Relay inclus.",
-        m: [FALLBACK_IMG],
-        v: [
-            { w: "Standard (40 × 40 cm)", p: 80 },
-            { w: "XL Pro (60 × 60 cm)", p: 120 }
-        ]
-    },
-    {
-        id: "p_figurine_3d", n: "Figurine 3D Personnalisée", o: "Impression & Merch", t: "FIGURINE 3D",
-        d: "Figurine 3D imprimée sur-mesure d'après votre personnage ou logo. Livraison Mondial Relay incluse.",
+        id: "merch_figurine_3d",
+        n: "🗿 Figurine 3D Perso",
+        o: "Impression & Merch",
+        sub: "Studio & Accessoires",
+        t: "MONDIAL RELAY",
+        d: "Figurine 3D personnalisée. Livraison Mondial Relay incluse.\n• Basique : 60€ | Peinte/Premium : 90€",
         m: [FALLBACK_IMG],
         v: [
             { w: "Basique", p: 60 },
-            { w: "Finition Peinte / Premium", p: 90 }
+            { w: "Peinte/Premium", p: 90 }
+        ]
+    },
+    {
+        id: "merch_adler_230v",
+        n: "❄️ ADLER 230V (Frigo Stash)",
+        o: "Impression & Merch",
+        sub: "Studio & Accessoires",
+        t: "MONDIAL RELAY",
+        d: "ADLER 230V (Frigo Stash). Livraison Mondial Relay incluse.\n• ADLER 230V (Frigo Stash) : 160€",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "ADLER 230V (Frigo Stash)", p: 160 }
+        ]
+    },
+    {
+        id: "merch_tickets_gratter",
+        n: "🎟️ Tickets à Gratter & Roue Fêtes",
+        o: "Impression & Merch",
+        sub: "Tickets & Jeux",
+        t: "MONDIAL RELAY",
+        d: "Tickets à gratter et lot fêtes. Livraison Mondial Relay incluse.\n• Tickets à Gratter : 80 (60€) | 500 (130€) | 1000 (200€)\n• Lot Cartes à Gratter \"Tourne la roue\" (fêtes) : 160 (80€)",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Tickets à Gratter — 80", p: 60 },
+            { w: "Tickets à Gratter — 500", p: 130 },
+            { w: "Tickets à Gratter — 1000", p: 200 },
+            { w: "Lot \"Tourne la roue\" (fêtes) — 160", p: 80 }
+        ]
+    },
+    {
+        id: "merch_capsules_2g",
+        n: "💎 Capsules 2g (Silicone, Diamant Coloré & Blanc)",
+        o: "Impression & Merch",
+        sub: "Capsules 2g",
+        t: "MONDIAL RELAY",
+        d: "Capsules 2g. Livraison Mondial Relay incluse.\n• Silicone 2g : 70 (50€) | 100 (80€) | 200 (140€)\n• Diamant Coloré 2g : 120 (80€) | 300 (180€) | 600 (280€) | 1200 (580€)\n• Diamant Blanc 2g : 140 (80€) | 210 (150€) | 350 (200€) | 420 (250€) | 560 (320€) | 1400 (550€)",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Silicone 2g — 70", p: 50 },
+            { w: "Silicone 2g — 100", p: 80 },
+            { w: "Silicone 2g — 200", p: 140 },
+            { w: "Diamant Coloré 2g — 120", p: 80 },
+            { w: "Diamant Coloré 2g — 300", p: 180 },
+            { w: "Diamant Coloré 2g — 600", p: 280 },
+            { w: "Diamant Coloré 2g — 1200", p: 580 },
+            { w: "Diamant Blanc 2g — 140", p: 80 },
+            { w: "Diamant Blanc 2g — 210", p: 150 },
+            { w: "Diamant Blanc 2g — 350", p: 200 },
+            { w: "Diamant Blanc 2g — 420", p: 250 },
+            { w: "Diamant Blanc 2g — 560", p: 320 },
+            { w: "Diamant Blanc 2g — 1400", p: 550 }
+        ]
+    },
+    {
+        id: "merch_pochons",
+        n: "👜 Pochons & Gros Pochons (Style Aléatoire)",
+        o: "Impression & Merch",
+        sub: "Pochons",
+        t: "MONDIAL RELAY",
+        d: "Pochons style aléatoire. Livraison Mondial Relay incluse.\n• Pochon : 200 (50€) | 400 (80€) | 600 (100€) | 800 (150€) | 1000 (200€)\n• Gros Pochon : 200 (80€) | 400 (120€) | 600 (160€) | 800 (180€) | 1000 (220€)",
+        m: [FALLBACK_IMG],
+        v: [
+            { w: "Pochon — 200", p: 50 },
+            { w: "Pochon — 400", p: 80 },
+            { w: "Pochon — 600", p: 100 },
+            { w: "Pochon — 800", p: 150 },
+            { w: "Pochon — 1000", p: 200 },
+            { w: "Gros Pochon — 200", p: 80 },
+            { w: "Gros Pochon — 400", p: 120 },
+            { w: "Gros Pochon — 600", p: 160 },
+            { w: "Gros Pochon — 800", p: 180 },
+            { w: "Gros Pochon — 1000", p: 220 }
         ]
     }
 ];
@@ -1543,12 +1724,6 @@ async function loadSettings() {
 
 function detectSubCategory(p) {
     if (p.sub && String(p.sub).trim()) return String(p.sub).trim();
-    const txt = `${p.n || ""} ${p.o || ""} ${p.t || ""}`.toLowerCase();
-    if (txt.includes("briquet")) {
-        if (txt.includes("perso")) return "Briquet Perso";
-        if (txt.includes("clipper")) return "Briquet Clipper";
-        return "Briquet Basique";
-    }
     return "";
 }
 
@@ -1560,23 +1735,21 @@ async function loadProductsFromFirebase() {
         const snap = await fb().getDocs(fb().collection(window.db, "products"));
         snap.forEach(d => {
             const pid = String(d.id);
-            if (!LEGACY_GROUPED_IDS.has(pid)) {
-                remoteMap.set(pid, { id: pid, ...d.data() });
-            }
+            remoteMap.set(pid, { id: pid, ...d.data() });
         });
     } catch (e) {
-        console.warn("Firebase indisponible, catalogue par défaut utilisé", e);
+        console.warn("Firebase indisponible, catalogue officiel utilisé", e);
     }
 
+    const defaultIds = new Set(DEFAULT_PRODUCTS.map(p => String(p.id)));
     const base = DEFAULT_PRODUCTS
-        .filter(p => !deletedIds.includes(String(p.id)) && !LEGACY_GROUPED_IDS.has(String(p.id)))
+        .filter(p => !deletedIds.includes(String(p.id)))
         .map(p => remoteMap.has(String(p.id)) ? remoteMap.get(String(p.id)) : p);
 
-    const defaultIds = new Set(DEFAULT_PRODUCTS.map(p => String(p.id)));
     const custom = [...remoteMap.values()].filter(p => !defaultIds.has(String(p.id)));
 
     products = [...custom, ...base]
-        .filter(p => p && p.n && !LEGACY_GROUPED_IDS.has(String(p.id)))
+        .filter(p => p && p.n)
         .map(p => ({
             ...p,
             id: String(p.id),
@@ -1774,7 +1947,7 @@ function openProduct(id) {
     currentProduct = products.find(x => String(x.id) === String(id));
     if (!currentProduct || !currentProduct.v.length) return;
     selectedVariant = currentProduct.v[0];
-    const isPhys = currentProduct.o === "Impression & Merch" || currentProduct.o === "🔥 Briquets";
+    const isPhys = currentProduct.o === "Impression & Merch";
     selectedFormat = isPhys ? "Impression Physique" : "Fichier Numérique";
 
     const medias = currentProduct.m.length ? currentProduct.m : [FALLBACK_IMG];
@@ -2169,16 +2342,13 @@ async function seedPresetsToFirebase() {
     }
     vibe("heavy");
     try {
-        const presets = DEFAULT_PRODUCTS.filter(p => String(p.id).startsWith("preset_"));
-        for (const item of presets) {
+        for (const item of DEFAULT_PRODUCTS) {
             await fb().setDoc(fb().doc(window.db, "products", String(item.id)), item, { merge: true });
         }
-        for (const oldId of LEGACY_GROUPED_IDS) {
-            try { await fb().deleteDoc(fb().doc(window.db, "products", oldId)); } catch (e) {}
-        }
+        save("ledesign-deleted", []);
         await loadProductsFromFirebase();
         renderAdminList(); renderFilters(); renderShop();
-        showToast(`🚀 ${presets.length} Packs & Briquets synchronisés !`);
+        showToast(`🚀 ${DEFAULT_PRODUCTS.length} fiches du catalogue officiel synchronisées !`);
     } catch (e) {
         console.error(e);
         showToast("❌ Erreur lors de l'import Firebase");
